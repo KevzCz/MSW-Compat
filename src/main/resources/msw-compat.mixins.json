@@ -1,0 +1,41 @@
+{
+	"required": true,
+	"package": "net.pixeldreamstudios.mswcompat.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"HolyMoonlightGreatswordMixin",
+		"MoonlightGreatswordMixin",
+		"MoonlightShortswordMixin",
+		"BluemoonShortswordMixin",
+		"DarkMoonGreatswordMixin",
+		"BloodthirsterMixin",
+		"DarkinBladeMixin",
+		"DragonslayerSwordspearEntityMixin",
+		"DragonslayerSwordspearStormAttributionMixin",
+		"LightningDamageScalingMixin",
+		"DragonStaffMixin",
+		"DragonStaffProjectileMixin",
+		"LeviathanAxeMixin",
+		"LeviathanAxeEntityMixin",
+		"FreyrSwordGoalMixin",
+		"WhirligigSawbladeMixin",
+		"LichBaneMixin",
+		"NightfallMixin",
+		"MasterSwordMixin",
+		"NightsEdgeItemMixin",
+		"MjolnirWarmupLightningAttributionMixin",
+		"MjolnirProjectileDamageMixin",
+		"FrostmourneMixin",
+		"SoulmassMixin",
+		"EvokerFangsSoulmassScalingMixin",
+		"RimeSpectreFrostBeamScalingMixin",
+		"PureMoonlightGreatswordMixin",
+		"WitherSkullSoulScalingMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
