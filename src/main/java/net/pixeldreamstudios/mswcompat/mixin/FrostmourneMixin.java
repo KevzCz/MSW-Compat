@@ -23,8 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class FrostmourneMixin {
     @Unique private static final Identifier FROST_ID = Identifier.of("spell_power", "frost");
     @Unique private static final ThreadLocal<Integer> AMP_BONUS = ThreadLocal.withInitial(() -> 0);
-
-    /* Cache bonus amplifier from spell_power:frost at the start of postHit */
     @Inject(method = "postHit", at = @At("HEAD"))
     private void mswcompat$cacheFrostAmp(ItemStack stack, LivingEntity target, LivingEntity attacker,
                                          CallbackInfoReturnable<Boolean> cir) {
@@ -33,26 +31,23 @@ public abstract class FrostmourneMixin {
             RegistryKey<EntityAttribute> key = RegistryKey.of(RegistryKeys.ATTRIBUTE, FROST_ID);
             RegistryEntry<EntityAttribute> entry = Registries.ATTRIBUTE.getEntry(key).orElse(null);
             if (entry == null) {
-                // fallback if key lookup fails
                 EntityAttribute attr = Registries.ATTRIBUTE.get(FROST_ID);
                 if (attr != null) entry = Registries.ATTRIBUTE.getEntry(attr);
             }
             if (entry != null) {
                 double frost = attacker.getAttributeValue(entry);
-                bonus = (int)Math.floor(frost / 10.0); // +1 amp per 10 frost
+                bonus = (int)Math.floor(frost / 10.0);
             }
         }
         AMP_BONUS.set(bonus);
     }
 
-    /* Clear cache */
     @Inject(method = "postHit", at = @At("TAIL"))
     private void mswcompat$clearFrostAmp(ItemStack stack, LivingEntity target, LivingEntity attacker,
                                          CallbackInfoReturnable<Boolean> cir) {
         AMP_BONUS.remove();
     }
 
-    /* Raise the amplifier that Frostmourne applies */
     @Redirect(
             method = "postHit",
             at = @At(

@@ -39,7 +39,7 @@ public abstract class DragonStaffProjectileMixin {
                 arcane = (float) living.getAttributeValue(entry);
             }
         }
-        mswcompat$auraAmp.set(baseAmp + arcane / 10.0F); // additive, linear
+        mswcompat$auraAmp.set(baseAmp + arcane / 10.0F);
     }
 
     @Inject(method = "detonate", at = @At("TAIL"))

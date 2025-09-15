@@ -37,7 +37,7 @@ public abstract class LightningDamageScalingMixin {
             RegistryEntry<EntityAttribute> entry = Registries.ATTRIBUTE.getEntry(key).orElse(null);
             if (entry != null) {
                 double power = sp.getAttributeValue(entry);
-                add = (float) (power / 2.0);  // additive bonus when channeled by player
+                add = (float) (power / 2.0);
             }
         }
         mswcompat$add.set(add);
@@ -57,17 +57,14 @@ public abstract class LightningDamageScalingMixin {
                                                     LightningEntity lightning) {
         ServerPlayerEntity channeler = lightning.getChanneler();
 
-        // Only modify behavior if a player actually channeled this lightning
         if (channeler == null) {
             return instance.damage(source, baseAmount);
         }
 
-        // 1) Do not damage the channeler if they're in range and got struck
         if (instance == channeler) {
             return false;
         }
 
-        // 2) Do not damage passive or tamed entities
         if (instance instanceof PassiveEntity) {
             return false;
         }
@@ -75,10 +72,8 @@ public abstract class LightningDamageScalingMixin {
             return false;
         }
 
-        // 3) Apply additive bonus from spell_power:lightning
         float amount = baseAmount + mswcompat$add.get();
 
-        // 4) Lightning is 80% effective against players (targets), only for player-channeled lightning
         if (instance instanceof PlayerEntity) {
             amount *= 0.9F;
         }

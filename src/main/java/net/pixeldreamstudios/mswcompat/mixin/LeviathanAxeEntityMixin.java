@@ -20,7 +20,6 @@ public abstract class LeviathanAxeEntityMixin {
     @Unique private static final Identifier FROST_ID = Identifier.of("spell_power", "frost");
     @Unique private static final ThreadLocal<Float> DAMAGE_FACTOR = ThreadLocal.withInitial(() -> 1.0F);
 
-    /* Cache factor before getDamage() */
     @Inject(method = "getDamage", at = @At("HEAD"))
     private void mswcompat$cacheFactor(Entity target, CallbackInfoReturnable<Float> cir) {
         float ad = 0F, frost = 0F;
@@ -37,20 +36,16 @@ public abstract class LeviathanAxeEntityMixin {
             }
         }
 
-        // factor = 0.5*(AD/10) + 0.5*(Frost/20)
         float factor = 0.5F * (ad / 10.0F) + 0.5F * (frost / 20.0F);
         if (factor < 0F) factor = 0F;
         DAMAGE_FACTOR.set(factor);
     }
 
-    /* Apply factor to returned damage */
     @Inject(method = "getDamage", at = @At("RETURN"), cancellable = true)
     private void mswcompat$scaleThrownDamage(Entity target, CallbackInfoReturnable<Float> cir) {
         cir.setReturnValue(cir.getReturnValueF() * DAMAGE_FACTOR.get());
         DAMAGE_FACTOR.remove();
     }
-
-    /* Keep your collide() redirect from earlier if you want the FREEZING amp bonus there */
     @Redirect(
             method = "collide",
             at = @At(value = "INVOKE",

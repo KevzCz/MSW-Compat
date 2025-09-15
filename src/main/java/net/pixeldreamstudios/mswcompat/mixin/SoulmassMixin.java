@@ -37,7 +37,6 @@ public abstract class SoulmassMixin {
         if (entry == null) return 1.0F;
 
         double soul = sm.getAttributeValue(entry);
-        // 1.0x at 0 soul; +50% per 10 soul
         return 1.0F + (float)(soul / 20.0);
     }
 

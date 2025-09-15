@@ -30,7 +30,11 @@
 		"EvokerFangsSoulmassScalingMixin",
 		"RimeSpectreFrostBeamScalingMixin",
 		"PureMoonlightGreatswordMixin",
-		"WitherSkullSoulScalingMixin"
+		"WitherSkullSoulScalingMixin",
+		"GlaiveOfHodirProjectileScalingMixin",
+		"BladeDanceAoEDamageScalingMixin",
+		"DawnbreakerMixin",
+		"TonitrusLightningScalingMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

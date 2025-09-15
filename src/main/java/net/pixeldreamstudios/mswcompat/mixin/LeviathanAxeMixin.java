@@ -51,7 +51,6 @@ public abstract class LeviathanAxeMixin {
         AMP_BONUS.remove();
     }
 
-    /* Scale explosion damage */
     @ModifyArg(method = "iceExplosion",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"),
@@ -60,7 +59,6 @@ public abstract class LeviathanAxeMixin {
         return originalAmount * FROST_FACTOR.get();
     }
 
-    /* Redirect FREEZING application inside iceExplosion to add our amp bonus */
     @Redirect(
             method = "iceExplosion",
             at = @At(value = "INVOKE",
@@ -72,8 +70,6 @@ public abstract class LeviathanAxeMixin {
         int amp = Math.max(0, original.getAmplifier() + AMP_BONUS.get());
         return target.addStatusEffect(new StatusEffectInstance(type, duration, amp));
     }
-
-    /* Redirect FREEZING application in melee postHit (uses attacker’s frost each time) */
     @Redirect(
             method = "postHit",
             at = @At(value = "INVOKE",

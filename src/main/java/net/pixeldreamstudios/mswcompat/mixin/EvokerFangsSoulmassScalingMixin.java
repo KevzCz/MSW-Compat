@@ -31,17 +31,15 @@ public abstract class EvokerFangsSoulmassScalingMixin {
         if (entry == null) return 1.0F;
 
         double soul = owner.getAttributeValue(entry);
-        float factor = (float)(soul / 10.0); // requested: factor = soul/10
+        float factor = (float)(soul / 10.0);
         return Math.max(0.0F, factor);
     }
-
-    // Branch when owner == null (first call)
     @Redirect(
             method = "damage(Lnet/minecraft/entity/LivingEntity;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
-                    ordinal = 0   // 👈 move ordinal here
+                    ordinal = 0
             ),
             require = 0
     )
@@ -57,7 +55,7 @@ public abstract class EvokerFangsSoulmassScalingMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
-                    ordinal = 1   // 👈 and here
+                    ordinal = 1
             ),
             require = 0
     )

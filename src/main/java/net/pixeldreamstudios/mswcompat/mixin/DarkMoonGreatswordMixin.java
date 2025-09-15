@@ -26,7 +26,6 @@ public abstract class DarkMoonGreatswordMixin {
     @Unique private static final Identifier mswcompat$FROST_ID = Identifier.of("spell_power", "frost");
     @Unique private static final float mswcompat$SPELL_BASELINE = 20F;
 
-    // Cached per call
     @Unique private static final ThreadLocal<Float> mswcompat$damageFactor =
             ThreadLocal.withInitial(() -> 1.0F);
     @Unique private static final ThreadLocal<Integer> mswcompat$ampBonus =
@@ -38,7 +37,6 @@ public abstract class DarkMoonGreatswordMixin {
         int bonusAmp = 0;
 
         if (user != null) {
-            // Half-effective Attack Damage factor: 1 + 0.5*(AD/baseAD - 1)
             float adHalf = 1.0F;
             float baseAd = ((DarkMoonGreatsword)(Object)this).getAttackDamage();
             if (baseAd > 0.0F) {
@@ -48,9 +46,7 @@ public abstract class DarkMoonGreatswordMixin {
                     adHalf = 1.0F + 0.5F * (full - 1.0F);
                 }
             }
-
-            // Frost spell power: half-effective factor for damage AND additive amp bonus
-            float frostHalf = 1.0F;
+float frostHalf = 1.0F;
             double frostVal = 0.0;
             RegistryKey<EntityAttribute> key = RegistryKey.of(RegistryKeys.ATTRIBUTE, mswcompat$FROST_ID);
             RegistryEntry<EntityAttribute> entry = Registries.ATTRIBUTE.getEntry(key).orElse(null);
@@ -60,14 +56,13 @@ public abstract class DarkMoonGreatswordMixin {
             }
 
             finalFactor = adHalf * frostHalf;
-            bonusAmp = Math.max(0, (int)Math.floor(frostVal / 10.0)); // +⌊frost/10⌋
+            bonusAmp = Math.max(0, (int)Math.floor(frostVal / 10.0));
         }
 
         mswcompat$damageFactor.set(finalFactor);
         mswcompat$ampBonus.set(bonusAmp);
     }
 
-    // Scale projectile damage: baseDamage * factor
     @ModifyArg(
             method = "onStoppedUsing",
             at = @At(value = "INVOKE",
@@ -78,7 +73,6 @@ public abstract class DarkMoonGreatswordMixin {
         return baseDamage * mswcompat$damageFactor.get();
     }
 
-    // Add to status effect amplifier: amp + ⌊frost/10⌋
     @ModifyArg(
             method = "onStoppedUsing",
             at = @At(value = "INVOKE",

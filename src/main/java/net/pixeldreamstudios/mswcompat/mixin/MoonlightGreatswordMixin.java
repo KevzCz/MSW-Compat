@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin(value = MoonlightGreatsword.class, remap = false) // 3rd-party mod: don't remap names
+@Mixin(value = MoonlightGreatsword.class, remap = false)
 public abstract class MoonlightGreatswordMixin {
     @Unique private static final float mswcompat$BASELINE_MOONLIGHT = 9.0F;
     @Unique private static final float mswcompat$BASELINE_BLUEMOON = 8.0F;
@@ -49,7 +49,7 @@ public abstract class MoonlightGreatswordMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/soulsweaponry/entity/projectile/MoonlightProjectile;setDamage(D)V",
-                    remap = false // 3rd-party type in the target
+                    remap = false
             ),
             index = 0,
             require = 0
