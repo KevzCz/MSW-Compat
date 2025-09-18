@@ -19,13 +19,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin(value = DragonStaffProjectile.class, remap = false)
+@Mixin(value = DragonStaffProjectile.class)
 public abstract class DragonStaffProjectileMixin {
     @Unique private static final Identifier mswcompat$ARCANE_ID = Identifier.of("spell_power", "arcane");
     @Unique private static final ThreadLocal<Float> mswcompat$auraAmp =
             ThreadLocal.withInitial(() -> ConfigConstructor.dragon_staff_aura_strength);
 
-    @Inject(method = "detonate", at = @At("HEAD"))
+    @Inject(method = "detonate", at = @At("HEAD"), remap = false)
     private void mswcompat$cacheArcaneScaling(CallbackInfo ci) {
         float baseAmp = ConfigConstructor.dragon_staff_aura_strength;
         float arcane = 0.0F;
@@ -42,7 +42,7 @@ public abstract class DragonStaffProjectileMixin {
         mswcompat$auraAmp.set(baseAmp + arcane / 10.0F);
     }
 
-    @Inject(method = "detonate", at = @At("TAIL"))
+    @Inject(method = "detonate", at = @At("TAIL"), remap = false)
     private void mswcompat$clearArcaneScaling(CallbackInfo ci) {
         mswcompat$auraAmp.remove();
     }
@@ -50,7 +50,8 @@ public abstract class DragonStaffProjectileMixin {
     @Redirect(
             method = "detonate",
             at = @At(value = "FIELD",
-                    target = "Lnet/soulsweaponry/config/ConfigConstructor;dragon_staff_aura_strength:F")
+                    target = "Lnet/soulsweaponry/config/ConfigConstructor;dragon_staff_aura_strength:F"),
+            remap = false
     )
     private float mswcompat$redirectDetonateAuraAmp() {
         return mswcompat$auraAmp.get();

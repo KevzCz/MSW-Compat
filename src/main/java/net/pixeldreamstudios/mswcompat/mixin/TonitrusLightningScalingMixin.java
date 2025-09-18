@@ -22,14 +22,9 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/*
- * Scales Tonitrus behavior by spell_power:lightning:
- * - ChainLightning damage: × (1 + lightning/40)
- * - STORMVEIL amp on use: + (lightning/20) before ceil(...)
- * - Empowered lightning: sets channeler to the attacking player
- */
+
 @Pseudo
-@Mixin(value = Tonitrus.class, remap = false)
+@Mixin(value = Tonitrus.class)
 public abstract class TonitrusLightningScalingMixin {
     @Unique private static final Identifier mswcompat$LIGHTNING_ID = Identifier.of("spell_power", "lightning");
 

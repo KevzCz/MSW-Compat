@@ -11,17 +11,15 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin(value = MoonlightGreatsword.class, remap = false)
+@Mixin(value = MoonlightGreatsword.class)
 public abstract class MoonlightGreatswordMixin {
     @Unique private static final float mswcompat$BASELINE_MOONLIGHT = 9.0F;
     @Unique private static final float mswcompat$BASELINE_BLUEMOON = 8.0F;
-
-    @Unique
-    private static final ThreadLocal<Float> mswcompat$scale = ThreadLocal.withInitial(() -> 1.0F);
+    @Unique private static final ThreadLocal<Float> mswcompat$scale = ThreadLocal.withInitial(() -> 1.0F);
 
     @Inject(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
@@ -29,33 +27,25 @@ public abstract class MoonlightGreatswordMixin {
             require = 0
     )
     private void mswcompat$cacheScale(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci) {
+        float baseline = ((Object) this instanceof BluemoonGreatsword) ? mswcompat$BASELINE_BLUEMOON : mswcompat$BASELINE_MOONLIGHT;
         float factor = 1.0F;
-
-        float baseline = ((Object) this instanceof BluemoonGreatsword)
-                ? mswcompat$BASELINE_BLUEMOON
-                : mswcompat$BASELINE_MOONLIGHT;
-
         if (user != null && baseline > 0.0F) {
             double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) {
-                factor = (float) (ad / baseline);
-            }
+            if (ad > 0.0) factor = (float)(ad / baseline);
         }
         mswcompat$scale.set(factor);
     }
 
-    @ModifyArg(
+    @Redirect(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/soulsweaponry/entity/projectile/MoonlightProjectile;setDamage(D)V",
-                    remap = false
+                    target = "Lnet/soulsweaponry/items/sword/MoonlightGreatsword;getProjectileDamage()F"
             ),
-            index = 0,
             require = 0
     )
-    private double mswcompat$scaleProjectileDamage(double baseDamage) {
-        return baseDamage * mswcompat$scale.get();
+    private float mswcompat$scaleProjectileDamageCall(MoonlightGreatsword self) {
+        return self.getProjectileDamage() * mswcompat$scale.get();
     }
 
     @Inject(

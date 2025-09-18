@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin(value = FreyrSwordGoal.class, remap = false)
+@Mixin(value = FreyrSwordGoal.class)
 public abstract class FreyrSwordGoalMixin {
     @Shadow(remap = false) private FreyrSwordEntity entity;
 

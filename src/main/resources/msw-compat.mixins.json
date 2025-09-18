@@ -8,33 +8,72 @@
 		"MoonlightShortswordMixin",
 		"BluemoonShortswordMixin",
 		"DarkMoonGreatswordMixin",
+		"PureMoonlightGreatswordMixin",
+		"MasterSwordMixin",
+
 		"BloodthirsterMixin",
 		"DarkinBladeMixin",
+
 		"DragonslayerSwordspearEntityMixin",
 		"DragonslayerSwordspearStormAttributionMixin",
-		"LightningDamageScalingMixin",
+
 		"DragonStaffMixin",
 		"DragonStaffProjectileMixin",
+
 		"LeviathanAxeMixin",
 		"LeviathanAxeEntityMixin",
+
 		"FreyrSwordGoalMixin",
+
 		"WhirligigSawbladeMixin",
+
 		"LichBaneMixin",
+
 		"NightfallMixin",
-		"MasterSwordMixin",
+
 		"NightsEdgeItemMixin",
+
 		"MjolnirWarmupLightningAttributionMixin",
 		"MjolnirProjectileDamageMixin",
+
 		"FrostmourneMixin",
+
 		"SoulmassMixin",
-		"EvokerFangsSoulmassScalingMixin",
 		"RimeSpectreFrostBeamScalingMixin",
-		"PureMoonlightGreatswordMixin",
+
+		"EvokerFangsSoulmassScalingMixin",
 		"WitherSkullSoulScalingMixin",
-		"GlaiveOfHodirProjectileScalingMixin",
+		"LightningDamageScalingMixin",
+
+		"GhostGlaiveMixin",
 		"BladeDanceAoEDamageScalingMixin",
+
+		"TonitrusLightningScalingMixin",
+		"DragonbaneMixin",
+
+		"ExcaliburMixin",
+
 		"DawnbreakerMixin",
-		"TonitrusLightningScalingMixin"
+		"EmpoweredDawnbreakerMixin",
+
+		"BloodlustMixin",
+		"DragonslayerSwordBerserkMixin",
+
+		"MoonveilDamageScalingMixin",
+
+		"SupernovaMixin",
+		"SupernovaWarmupMoltenMetalMixin",
+		"DamagingWarmupEntityDamageScaleMixin",
+		"MoltenMetalDamageScaleMixin",
+
+		"DraupnirSpearEntityMixin",
+		"DraupnirSpearMixin",
+
+		"UmbralTrespassMixin",
+		"UmbralTrespassDataAttackerMixin",
+
+		"CometSpearEntityMixin"
+
 	],
 	"injectors": {
 		"defaultRequire": 1

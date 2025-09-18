@@ -9,13 +9,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin(value = BluemoonShortsword.class, remap = false)
+@Mixin(value = BluemoonShortsword.class)
 public abstract class BluemoonShortswordMixin {
 
     @Unique
     private static final float mswcompat$BASELINE_ATTACK_DAMAGE = 7.0F;
 
-    @Inject(method = "getProjectileDamage()F", at = @At("RETURN"), cancellable = true, require = 0)
+    @Inject(method = "getProjectileDamage()F", at = @At("RETURN"), cancellable = true, require = 0, remap = false)
     private void mswcompat$scaleProjectileDamage(CallbackInfoReturnable<Float> cir) {
         float base = cir.getReturnValueF();
 

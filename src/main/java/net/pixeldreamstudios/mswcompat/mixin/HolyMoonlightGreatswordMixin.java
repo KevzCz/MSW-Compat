@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin(value = HolyMoonlightGreatsword.class, remap = false)
+@Mixin(value = HolyMoonlightGreatsword.class)
 public abstract class HolyMoonlightGreatswordMixin {
 	@Unique
 	private static final float mswcompat$BASELINE_ATTACK_DAMAGE = 10.0F;
@@ -66,7 +66,8 @@ public abstract class HolyMoonlightGreatswordMixin {
 			method = "getAbilityDamage()F",
 			at = @At("RETURN"),
 			cancellable = true,
-			require = 0
+			require = 0,
+			remap = false
 	)
 	private void mswcompat$scaleAbilityDamage(CallbackInfoReturnable<Float> cir) {
 		cir.setReturnValue(cir.getReturnValueF() * mswcompat$scale.get());

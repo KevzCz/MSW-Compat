@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Pseudo
-@Mixin(value = BladeDanceItem.class, remap = false)
+@Mixin(value = BladeDanceItem.class)
 public abstract class BladeDanceAoEDamageScalingMixin {
     @Unique private static final float mswcompat$AD_BASE = 8.0F;
     @Unique private static final float mswcompat$AS_BASE = 1.3F;
