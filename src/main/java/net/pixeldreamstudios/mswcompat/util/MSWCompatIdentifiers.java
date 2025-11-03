@@ -28,29 +28,31 @@ public class MSWCompatIdentifiers {
     }
 
     public static final class ModifierIds {
-        public static final Identifier MJOLNIR_LIGHTNING = Identifier.of("msw-compat", "mjolnir_lightning");
-        public static final Identifier NIGHTFALL_SOUL = Identifier.of("msw-compat", "nightfall_soul");
-        public static final Identifier NIGHTFALL_PET_INHERITANCE = Identifier.of("msw-compat", "nightfall_pet_inheritance");
-        public static final Identifier FORLORN_SCYTHE_SOUL = Identifier.of("msw-compat", "forlorn_scythe_soul");
-        public static final Identifier LEVIATHAN_AXE_FROST = Identifier.of("msw-compat", "leviathan_axe_frost");
-        public static final Identifier LICH_BANE_FIRE = Identifier.of("msw-compat", "lich_bane_fire");
-        public static final Identifier MASTER_SWORD_HEALTH = Identifier.of("msw-compat", "master_sword_health");
-        public static final Identifier DARK_MOON_GREATSWORD_FROST = Identifier.of("msw-compat", "dark_moon_greatsword_frost");
-        public static final Identifier EXCALIBUR_ARCANE = Identifier.of("msw-compat", "excalibur_arcane");
-        public static final Identifier EXCALIBUR_SOUL = Identifier.of("msw-compat", "excalibur_soul");
-        public static final Identifier SOUL_REAPER_SOUL = Identifier.of("msw-compat", "soul_reaper_soul");
-        public static final Identifier SOUL_REAPER_PET_INHERITANCE = Identifier.of("msw-compat", "soul_reaper_pet_inheritance");
-        public static final Identifier FROSTMOURNE_FROST = Identifier.of("msw-compat", "frostmourne_frost");
-        public static final Identifier FROSTMOURNE_PET_INHERITANCE = Identifier.of("msw-compat", "frostmourne_pet_inheritance");
-        public static final Identifier NIGHTS_EDGE_ARCANE = Identifier.of("msw-compat", "nights_edge_arcane");
-        public static final Identifier SUPERNOVA_FIRE = Identifier.of("msw-compat", "supernova_fire");
-        public static final Identifier DRAGONBANE_LIGHTNING = Identifier.of("msw-compat", "dragonbane_lightning");
-        public static final Identifier DRAGON_STAFF_ARCANE = Identifier.of("msw-compat", "dragon_staff_arcane");
-        public static final Identifier TONITRUS_LIGHTNING = Identifier.of("msw-compat", "tonitrus_lightning");
-        public static final Identifier GHOST_GLAIVE_ARCANE = Identifier.of("msw-compat", "ghost_glaive_arcane");
-        public static final Identifier DAWNBREAKER_FIRE = Identifier.of("msw-compat", "dawnbreaker_fire");
-        public static final Identifier EMPOWERED_DAWNBREAKER_FIRE = Identifier.of("msw-compat", "empowered_dawnbreaker_fire");
-        public static final Identifier DARKMOON_LONGBOW_ARCANE = Identifier.of("msw-compat", "darkmoon_longbow_arcane");
+        // Using SoulsWeaponry namespace with actual item IDs
+        public static final Identifier MJOLNIR_LIGHTNING = Identifier.of("soulsweapons", "mjolnir");
+        public static final Identifier NIGHTFALL_SOUL = Identifier.of("soulsweapons", "nightfall");
+        public static final Identifier NIGHTFALL_PET_INHERITANCE = Identifier.of("soulsweapons", "nightfall");
+        public static final Identifier FORLORN_SCYTHE_SOUL = Identifier.of("soulsweapons", "forlorn_scythe");
+        public static final Identifier LEVIATHAN_AXE_FROST = Identifier.of("soulsweapons", "leviathan_axe");
+        public static final Identifier LICH_BANE_FIRE = Identifier.of("soulsweapons", "lich_bane");
+        public static final Identifier MASTER_SWORD_HEALTH = Identifier.of("soulsweapons", "master_sword");
+        public static final Identifier DARK_MOON_GREATSWORD_FROST = Identifier.of("soulsweapons", "dark_moon_greatsword");
+        public static final Identifier EXCALIBUR_ARCANE = Identifier.of("soulsweapons", "excalibur");
+        public static final Identifier EXCALIBUR_SOUL = Identifier.of("soulsweapons", "excalibur");
+        public static final Identifier SOUL_REAPER_SOUL = Identifier.of("soulsweapons", "soul_reaper");
+        public static final Identifier SOUL_REAPER_PET_INHERITANCE = Identifier.of("soulsweapons", "soul_reaper");
+        public static final Identifier FROSTMOURNE_FROST = Identifier.of("soulsweapons", "frostmourne");
+        public static final Identifier FROSTMOURNE_PET_INHERITANCE = Identifier.of("soulsweapons", "frostmourne");
+        public static final Identifier NIGHTS_EDGE_ARCANE = Identifier.of("soulsweapons", "nights_edge_item");
+        public static final Identifier SUPERNOVA_FIRE = Identifier.of("soulsweapons", "supernova");
+        public static final Identifier DRAGONBANE_LIGHTNING = Identifier.of("soulsweapons", "dragonbane");
+        public static final Identifier DRAGON_STAFF_ARCANE = Identifier.of("soulsweapons", "dragon_staff");
+        public static final Identifier TONITRUS_LIGHTNING = Identifier.of("soulsweapons", "tonitrus");
+        public static final Identifier GHOST_GLAIVE_ARCANE = Identifier.of("soulsweapons", "glaive_of_hodir");
+        public static final Identifier DAWNBREAKER_FIRE = Identifier.of("soulsweapons", "dawnbreaker");
+        public static final Identifier EMPOWERED_DAWNBREAKER_FIRE = Identifier.of("soulsweapons", "empowered_dawnbreaker");
+        public static final Identifier DARKMOON_LONGBOW_ARCANE = Identifier.of("soulsweapons", "darkmoon_longbow");
+
         private ModifierIds() {}
     }
 
