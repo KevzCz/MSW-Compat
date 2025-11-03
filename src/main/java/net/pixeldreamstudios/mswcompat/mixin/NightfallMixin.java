@@ -7,13 +7,12 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.config.ConfigConstructor;
 import net.soulsweaponry.items.hammer.Nightfall;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,24 +24,24 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Pseudo
 @Mixin(Nightfall.class)
 public abstract class NightfallMixin {
-    @Unique private static final Identifier mswcompat$SOUL_ID = Identifier.of("spell_power", "soul");
-    @Unique private static final float mswcompat$AD_BASELINE = 11.0F;
-    @Unique private static final float mswcompat$SOUL_BASELINE = 20.0F;
-
     @Unique
     private static float mswcompat$scale(LivingEntity attacker) {
         if (attacker == null) return 1.0F;
 
+        float adBaseline = ConfigHelper.getBaselineValue("nightfall.attack_damage_baseline", 11.0F);
+        float soulBaseline = ConfigHelper.getBaselineValue("nightfall.soul_baseline", 20.0F);
+        float adWeight = ConfigHelper.getFloatValue("nightfall.attack_damage_weight", 0.5F);
+        float soulWeight = ConfigHelper.getFloatValue("nightfall.soul_weight", 0.5F);
+
         double ad = attacker.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 
-        RegistryKey<EntityAttribute> key = RegistryKey.of(RegistryKeys.ATTRIBUTE, mswcompat$SOUL_ID);
-        RegistryEntry<EntityAttribute> soulAttr = Registries.ATTRIBUTE.getEntry(key).orElse(null);
+        RegistryEntry.Reference<EntityAttribute> soulAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.SOUL);
         double soul = soulAttr != null ? attacker.getAttributeValue(soulAttr) : 0.0D;
 
-        float adPart = mswcompat$AD_BASELINE > 0.0F ? (float)(ad / mswcompat$AD_BASELINE) : 1.0F;
-        float soulPart = mswcompat$SOUL_BASELINE > 0.0F ? (float)(soul / mswcompat$SOUL_BASELINE) : 0.0F;
+        float adPart = adBaseline > 0.0F ? (float)(ad / adBaseline) : 1.0F;
+        float soulPart = soulBaseline > 0.0F ? (float)(soul / soulBaseline) : 0.0F;
 
-        float factor = 0.5F * adPart + 0.5F * soulPart;
+        float factor = adWeight * adPart + soulWeight * soulPart;
         return Math.max(0.0F, factor);
     }
 

@@ -4,6 +4,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.items.sword.BluemoonGreatsword;
 import net.soulsweaponry.items.sword.MoonlightGreatsword;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,8 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(value = MoonlightGreatsword.class)
 public abstract class MoonlightGreatswordMixin {
-    @Unique private static final float mswcompat$BASELINE_MOONLIGHT = 9.0F;
-    @Unique private static final float mswcompat$BASELINE_BLUEMOON = 8.0F;
     @Unique private static final ThreadLocal<Float> mswcompat$scale = ThreadLocal.withInitial(() -> 1.0F);
 
     @Inject(
@@ -27,7 +26,12 @@ public abstract class MoonlightGreatswordMixin {
             require = 0
     )
     private void mswcompat$cacheScale(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci) {
-        float baseline = ((Object) this instanceof BluemoonGreatsword) ? mswcompat$BASELINE_BLUEMOON : mswcompat$BASELINE_MOONLIGHT;
+        boolean isBluemoon = (Object) this instanceof BluemoonGreatsword;
+        float baseline = ConfigHelper.getBaselineValue(
+                isBluemoon ? "bluemoon_greatsword.attack_damage_baseline" : "moonlight_greatsword.attack_damage_baseline",
+                isBluemoon ? 8.0F : 9.0F
+        );
+
         float factor = 1.0F;
         if (user != null && baseline > 0.0F) {
             double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);

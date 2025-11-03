@@ -4,6 +4,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.config.ConfigConstructor;
 import net.soulsweaponry.items.sword.HolyMoonlightGreatsword;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,11 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Pseudo
 @Mixin(value = HolyMoonlightGreatsword.class)
 public abstract class HolyMoonlightGreatswordMixin {
-	@Unique
-	private static final float mswcompat$BASELINE_ATTACK_DAMAGE = 10.0F;
-
-	@Unique
-	private static final ThreadLocal<Float> mswcompat$scale = ThreadLocal.withInitial(() -> 1.0F);
+	@Unique private static final ThreadLocal<Float> mswcompat$scale = ThreadLocal.withInitial(() -> 1.0F);
 
 	@Inject(
 			method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
@@ -32,9 +29,13 @@ public abstract class HolyMoonlightGreatswordMixin {
 	private void mswcompat$cacheScale(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci) {
 		float factor = 1.0F;
 		if (user != null) {
-			double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-			if (ad > 0.0) {
-				factor = (float) (ad / mswcompat$BASELINE_ATTACK_DAMAGE);
+			float adBaseline = ConfigHelper.getBaselineValue("holy_moonlight_greatsword.attack_damage_baseline", 10.0F);
+
+			if (adBaseline > 0.0F) {
+				double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+				if (ad > 0.0) {
+					factor = (float) (ad / adBaseline);
+				}
 			}
 		}
 		mswcompat$scale.set(factor);

@@ -7,6 +7,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.items.sword.DragonslayerSwordBerserk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -19,8 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(value = DragonslayerSwordBerserk.class)
 public abstract class DragonslayerSwordBerserkMixin {
-    @Unique private static final float BASELINE_AD = 12.0F;
-    @Unique private static final ThreadLocal<Float> FACTOR = ThreadLocal.withInitial(() -> 1.0F);
+    @Unique private static final ThreadLocal<Float> mswcompat$factor = ThreadLocal.withInitial(() -> 1.0F);
 
     @Inject(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;)V",
@@ -29,11 +29,15 @@ public abstract class DragonslayerSwordBerserkMixin {
     )
     private void mswcompat$cache(ServerWorld world, ItemStack stack, PlayerEntity user, CallbackInfo ci) {
         float f = 1.0F;
-        if (user != null && BASELINE_AD > 0.0F) {
-            double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) f = (float)(ad / BASELINE_AD);
+        if (user != null) {
+            float adBaseline = ConfigHelper.getBaselineValue("dragonslayer_sword_berserk.attack_damage_baseline", 12.0F);
+
+            if (adBaseline > 0.0F) {
+                double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                if (ad > 0.0) f = (float)(ad / adBaseline);
+            }
         }
-        FACTOR.set(f);
+        mswcompat$factor.set(f);
     }
 
     @Redirect(
@@ -42,7 +46,7 @@ public abstract class DragonslayerSwordBerserkMixin {
             require = 0
     )
     private StatusEffectInstance mswcompat$newBloodthirsty(RegistryEntry<StatusEffect> effect, int duration, int amplifier) {
-        float f = FACTOR.get();
+        float f = mswcompat$factor.get();
         int amp = Math.max(0, (int)Math.floor((amplifier + 1) * f) - 1);
         return new StatusEffectInstance(effect, duration, amp);
     }
@@ -53,7 +57,7 @@ public abstract class DragonslayerSwordBerserkMixin {
             require = 0
     )
     private StatusEffectInstance mswcompat$newStrength(RegistryEntry<StatusEffect> effect, int duration, int amplifier) {
-        float f = FACTOR.get();
+        float f = mswcompat$factor.get();
         int amp = Math.max(0, (int)Math.floor((amplifier + 1) * f) - 1);
         return new StatusEffectInstance(effect, duration, amp);
     }
@@ -64,6 +68,6 @@ public abstract class DragonslayerSwordBerserkMixin {
             require = 0
     )
     private void mswcompat$clear(ServerWorld world, ItemStack stack, PlayerEntity user, CallbackInfo ci) {
-        FACTOR.remove();
+        mswcompat$factor.remove();
     }
 }

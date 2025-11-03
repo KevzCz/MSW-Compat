@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.items.BladeDanceItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -14,18 +15,24 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Pseudo
 @Mixin(value = BladeDanceItem.class)
 public abstract class BladeDanceAoEDamageScalingMixin {
-    @Unique private static final float mswcompat$AD_BASE = 8.0F;
-    @Unique private static final float mswcompat$AS_BASE = 1.3F;
 
     @Unique
     private static float mswcompat$factorFromSource(DamageSource src) {
         Entity atk = src.getAttacker();
         if (!(atk instanceof LivingEntity user)) return 1.0F;
+
+        float adBaseline = ConfigHelper.getBaselineValue("blade_dance.attack_damage_baseline", 8.0F);
+        float asBaseline = ConfigHelper.getBaselineValue("blade_dance.attack_speed_baseline", 1.3F);
+        float adWeight = ConfigHelper.getFloatValue("blade_dance.attack_damage_weight", 0.75F);
+        float asWeight = ConfigHelper.getFloatValue("blade_dance.attack_speed_weight", 0.75F);
+
         double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         double as = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED);
-        float adPart = mswcompat$AD_BASE > 0.0F ? (float)(ad / mswcompat$AD_BASE) : 1.0F;
-        float asPart = mswcompat$AS_BASE > 0.0F ? (float)(as / mswcompat$AS_BASE) : 1.0F;
-        return 1.0F + 0.75F * (adPart - 1.0F) + 0.75F * (asPart - 1.0F);
+
+        float adPart = adBaseline > 0.0F ? (float)(ad / adBaseline) : 1.0F;
+        float asPart = asBaseline > 0.0F ? (float)(as / asBaseline) : 1.0F;
+
+        return 1.0F + adWeight * (adPart - 1.0F) + asWeight * (asPart - 1.0F);
     }
 
     @Redirect(

@@ -6,6 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.entity.projectile.MjolnirProjectile;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -18,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Pseudo
 @Mixin(MjolnirProjectile.class)
 public abstract class MjolnirProjectileDamageMixin {
-    @Unique private static final float mswcompat$AD_BASELINE = 13.0F;
     @Unique private static final ThreadLocal<Float> mswcompat$factor = ThreadLocal.withInitial(() -> 1.0F);
     @Unique private static final ThreadLocal<Boolean> mswcompat$didScale = ThreadLocal.withInitial(() -> false);
 
@@ -27,10 +27,13 @@ public abstract class MjolnirProjectileDamageMixin {
         float factor = 1.0F;
         MjolnirProjectile self = (MjolnirProjectile) (Object) this;
         Entity owner = self.getOwner();
-        if (owner instanceof LivingEntity living && mswcompat$AD_BASELINE > 0.0F) {
-            double ad = living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) {
-                factor = (float) (ad / mswcompat$AD_BASELINE);
+        if (owner instanceof LivingEntity living) {
+            float adBaseline = ConfigHelper.getBaselineValue("mjolnir.projectile.attack_damage_baseline", 13.0F);
+            if (adBaseline > 0.0F) {
+                double ad = living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                if (ad > 0.0) {
+                    factor = (float) (ad / adBaseline);
+                }
             }
         }
         mswcompat$factor.set(Math.max(0.0F, factor));

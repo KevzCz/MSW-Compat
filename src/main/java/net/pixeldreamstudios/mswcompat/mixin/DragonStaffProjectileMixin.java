@@ -3,11 +3,10 @@ package net.pixeldreamstudios.mswcompat.mixin;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.config.ConfigConstructor;
 import net.soulsweaponry.entity.projectile.DragonStaffProjectile;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(value = DragonStaffProjectile.class)
 public abstract class DragonStaffProjectileMixin {
-    @Unique private static final Identifier mswcompat$ARCANE_ID = Identifier.of("spell_power", "arcane");
     @Unique private static final ThreadLocal<Float> mswcompat$auraAmp =
             ThreadLocal.withInitial(() -> ConfigConstructor.dragon_staff_aura_strength);
 
@@ -33,13 +31,14 @@ public abstract class DragonStaffProjectileMixin {
         DragonStaffProjectile self = (DragonStaffProjectile)(Object)this;
         Entity owner = self.getOwner();
         if (owner instanceof LivingEntity living) {
-            RegistryKey<EntityAttribute> key = RegistryKey.of(RegistryKeys.ATTRIBUTE, mswcompat$ARCANE_ID);
-            RegistryEntry<EntityAttribute> entry = Registries.ATTRIBUTE.getEntry(key).orElse(null);
+            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
             if (entry != null) {
                 arcane = (float) living.getAttributeValue(entry);
             }
         }
-        mswcompat$auraAmp.set(baseAmp + arcane / 10.0F);
+
+        float auraPer10 = ConfigHelper.getBaselineValue("dragon_staff.aura_amplifier_per_10_arcane", 1.0F);
+        mswcompat$auraAmp.set(baseAmp + (arcane / 10.0F) * auraPer10);
     }
 
     @Inject(method = "detonate", at = @At("TAIL"), remap = false)

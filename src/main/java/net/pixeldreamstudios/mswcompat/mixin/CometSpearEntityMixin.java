@@ -5,18 +5,16 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.hit.EntityHitResult;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.entity.projectile.CometSpearEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Pseudo
 @Mixin(value = CometSpearEntity.class)
 public abstract class CometSpearEntityMixin {
-    @Unique private static final float BASELINE_AD = 8.0F;
-
 
     @Redirect(
             method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
@@ -31,9 +29,11 @@ public abstract class CometSpearEntityMixin {
 
         float factor = 1.0F;
         Entity owner = self.getOwner();
-        if (owner instanceof LivingEntity living && BASELINE_AD > 0.0F) {
+        float baseline = ConfigHelper.getBaselineValue("comet_spear.attack_damage_baseline", 8.0F);
+
+        if (owner instanceof LivingEntity living && baseline > 0.0F) {
             double ad = living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) factor = (float)(ad / BASELINE_AD);
+            if (ad > 0.0) factor = (float)(ad / baseline);
         }
 
         return target.damage(source, amount * factor);

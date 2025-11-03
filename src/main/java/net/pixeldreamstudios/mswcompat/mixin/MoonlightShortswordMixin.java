@@ -3,6 +3,7 @@ package net.pixeldreamstudios.mswcompat.mixin;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.entity.projectile.MoonlightProjectile;
 import net.soulsweaponry.items.sword.MoonlightShortsword;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,19 +17,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(MoonlightShortsword.class)
 public abstract class MoonlightShortswordMixin {
-    @Unique
-    private static final float mswcompat$BASELINE_ATTACK_DAMAGE = 8.0F;
-
-    @Unique
-    private static final ThreadLocal<Float> mswcompat$scale = ThreadLocal.withInitial(() -> 1.0F);
+    @Unique private static final ThreadLocal<Float> mswcompat$scale = ThreadLocal.withInitial(() -> 1.0F);
 
     @Inject(method = "summonSmallProjectile", at = @At("HEAD"))
     private static void mswcompat$cacheScale(World world, PlayerEntity user, CallbackInfo ci) {
         float factor = 1.0F;
         if (user != null) {
+            float baseline = ConfigHelper.getBaselineValue("moonlight_shortsword.attack_damage_baseline", 8.0F);
             double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) {
-                factor = (float)(ad / mswcompat$BASELINE_ATTACK_DAMAGE);
+            if (ad > 0.0 && baseline > 0.0F) {
+                factor = (float)(ad / baseline);
             }
         }
         mswcompat$scale.set(factor);

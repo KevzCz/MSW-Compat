@@ -2,9 +2,14 @@ package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.entity.projectile.LeviathanAxeEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -17,35 +22,41 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Pseudo
 @Mixin(LeviathanAxeEntity.class)
 public abstract class LeviathanAxeEntityMixin {
-    @Unique private static final Identifier FROST_ID = Identifier.of("spell_power", "frost");
-    @Unique private static final ThreadLocal<Float> DAMAGE_FACTOR = ThreadLocal.withInitial(() -> 1.0F);
+    @Unique private static final ThreadLocal<Float> mswcompat$damageFactor = ThreadLocal.withInitial(() -> 1.0F);
 
     @Inject(method = "getDamage", at = @At("HEAD"))
     private void mswcompat$cacheFactor(Entity target, CallbackInfoReturnable<Float> cir) {
         float ad = 0F, frost = 0F;
 
+        float adBaseline = ConfigHelper.getBaselineValue("leviathan_axe.attack_damage_baseline", 10.0F);
+        float frostBaseline = ConfigHelper.getBaselineValue("leviathan_axe.frost_baseline", 20.0F);
+        float adWeight = ConfigHelper.getFloatValue("leviathan_axe.attack_damage_weight", 0.5F);
+        float frostWeight = ConfigHelper.getFloatValue("leviathan_axe.frost_weight", 0.5F);
+
         LeviathanAxeEntity self = (LeviathanAxeEntity)(Object)this;
         Entity owner = self.getOwner();
         if (owner instanceof LivingEntity living) {
-            ad = (float) living.getAttributeValue(net.minecraft.entity.attribute.EntityAttributes.GENERIC_ATTACK_DAMAGE);
+            ad = (float) living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 
-            var key   = net.minecraft.registry.RegistryKey.of(net.minecraft.registry.RegistryKeys.ATTRIBUTE, FROST_ID);
-            var entry = net.minecraft.registry.Registries.ATTRIBUTE.getEntry(key).orElse(null);
+            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
             if (entry != null) {
                 frost = (float) living.getAttributeValue(entry);
             }
         }
 
-        float factor = 0.5F * (ad / 10.0F) + 0.5F * (frost / 20.0F);
+        float adPart = adBaseline > 0.0F ? ad / adBaseline : 1.0F;
+        float frostPart = frostBaseline > 0.0F ? frost / frostBaseline : 0.0F;
+        float factor = adWeight * adPart + frostWeight * frostPart;
         if (factor < 0F) factor = 0F;
-        DAMAGE_FACTOR.set(factor);
+        mswcompat$damageFactor.set(factor);
     }
 
     @Inject(method = "getDamage", at = @At("RETURN"), cancellable = true)
     private void mswcompat$scaleThrownDamage(Entity target, CallbackInfoReturnable<Float> cir) {
-        cir.setReturnValue(cir.getReturnValueF() * DAMAGE_FACTOR.get());
-        DAMAGE_FACTOR.remove();
+        cir.setReturnValue(cir.getReturnValueF() * mswcompat$damageFactor.get());
+        mswcompat$damageFactor.remove();
     }
+
     @Redirect(
             method = "collide",
             at = @At(value = "INVOKE",
@@ -57,9 +68,11 @@ public abstract class LeviathanAxeEntityMixin {
 
         int bonus = 0;
         if (owner instanceof LivingEntity living) {
-            var key   = net.minecraft.registry.RegistryKey.of(net.minecraft.registry.RegistryKeys.ATTRIBUTE, FROST_ID);
-            var entry = net.minecraft.registry.Registries.ATTRIBUTE.getEntry(key).orElse(null);
-            if (entry != null) bonus = (int)Math.floor(living.getAttributeValue(entry) / 10.0);
+            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
+            if (entry != null) {
+                float frostPerAmp = ConfigHelper.getBaselineValue("leviathan_axe.frost_per_amplifier", 10.0F);
+                bonus = (int)Math.floor(living.getAttributeValue(entry) / frostPerAmp);
+            }
         }
 
         net.minecraft.registry.entry.RegistryEntry<StatusEffect> type = original.getEffectType();

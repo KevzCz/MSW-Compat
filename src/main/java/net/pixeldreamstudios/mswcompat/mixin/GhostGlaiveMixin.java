@@ -4,11 +4,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.entity.projectile.noclip.DamagingNoClipEntity;
 import net.soulsweaponry.entity.projectile.noclip.GhostGlaiveEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,33 +19,32 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Pseudo
 @Mixin(value = DamagingNoClipEntity.class, remap = false)
 public abstract class GhostGlaiveMixin {
-    @Unique private static final Identifier FROST_ID = Identifier.of("spell_power", "frost");
-
-    @Unique
-    private static RegistryEntry.Reference<EntityAttribute> frostAttrRef() {
-        RegistryKey<EntityAttribute> key = RegistryKey.of(RegistryKeys.ATTRIBUTE, FROST_ID);
-        return Registries.ATTRIBUTE.getEntry(key).orElse(null);
-    }
 
     @Unique
     private float mswcompat$computeFactor() {
-        // Only scale Ghost Glaive; leave other DamagingNoClipEntity projectiles untouched.
         if (!(((Object) this) instanceof GhostGlaiveEntity gg)) return 1.0F;
 
         Entity owner = gg.getOwner();
         if (!(owner instanceof LivingEntity living)) return 1.0F;
 
+        float adBaseline = ConfigHelper.getBaselineValue("ghost_glaive.attack_damage_baseline", 10.0F);
+        float frostBaseline = ConfigHelper.getBaselineValue("ghost_glaive.frost_baseline", 20.0F);
+        float adWeight = ConfigHelper.getFloatValue("ghost_glaive.attack_damage_weight", 0.5F);
+        float frostWeight = ConfigHelper.getFloatValue("ghost_glaive.frost_weight", 0.5F);
+
         float ad = (float) living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         float frost = 0.0F;
-        var frostRef = frostAttrRef();
+
+        RegistryEntry.Reference<EntityAttribute> frostRef = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
         if (frostRef != null) {
             frost = (float) living.getAttributeValue(frostRef);
         }
 
-        // Same spirit as your Leviathan scaling: blend AD and Frost power.
-        float factor = 0.5F * (ad / 10.0F) + 0.5F * (frost / 20.0F);
-        if (factor < 0.0F) factor = 0.0F;
-        return factor;
+        float adPart = adBaseline > 0.0F ? ad / adBaseline : 1.0F;
+        float frostPart = frostBaseline > 0.0F ? frost / frostBaseline : 0.0F;
+
+        float factor = adWeight * adPart + frostWeight * frostPart;
+        return Math.max(0.0F, factor);
     }
 
     @ModifyArg(

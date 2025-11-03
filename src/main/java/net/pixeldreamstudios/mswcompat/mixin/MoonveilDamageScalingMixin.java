@@ -4,6 +4,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.items.katana.Moonveil;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,8 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(value = Moonveil.class)
 public abstract class MoonveilDamageScalingMixin {
-    @Unique private static final float BASELINE_AD = 11.0F;
-    @Unique private static final ThreadLocal<Float> SCALE = ThreadLocal.withInitial(() -> 1.0F);
+    @Unique private static final ThreadLocal<Float> mswcompat$scale = ThreadLocal.withInitial(() -> 1.0F);
 
     @Inject(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
@@ -27,11 +27,15 @@ public abstract class MoonveilDamageScalingMixin {
     )
     private void mswcompat$cacheScale(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci) {
         float factor = 1.0F;
-        if (user != null && BASELINE_AD > 0.0F) {
-            double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) factor = (float)(ad / BASELINE_AD);
+        if (user != null) {
+            float adBaseline = ConfigHelper.getBaselineValue("moonveil.attack_damage_baseline", 11.0F);
+
+            if (adBaseline > 0.0F) {
+                double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                if (ad > 0.0) factor = (float)(ad / adBaseline);
+            }
         }
-        SCALE.set(factor);
+        mswcompat$scale.set(factor);
     }
 
     @Redirect(
@@ -45,7 +49,7 @@ public abstract class MoonveilDamageScalingMixin {
             require = 0
     )
     private float mswcompat$scaleVerticalField() {
-        return net.soulsweaponry.config.ConfigConstructor.moonveil_vertical_damage * SCALE.get();
+        return net.soulsweaponry.config.ConfigConstructor.moonveil_vertical_damage * mswcompat$scale.get();
     }
 
     @Redirect(
@@ -59,7 +63,7 @@ public abstract class MoonveilDamageScalingMixin {
             require = 0
     )
     private float mswcompat$scaleWaveField() {
-        return net.soulsweaponry.config.ConfigConstructor.moonveil_wave_damage * SCALE.get();
+        return net.soulsweaponry.config.ConfigConstructor.moonveil_wave_damage * mswcompat$scale.get();
     }
 
     @Inject(
@@ -68,6 +72,6 @@ public abstract class MoonveilDamageScalingMixin {
             require = 0
     )
     private void mswcompat$clearScale(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci) {
-        SCALE.remove();
+        mswcompat$scale.remove();
     }
 }

@@ -2,7 +2,7 @@ package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.soulsweaponry.config.ConfigConstructor;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.entity.ai.goal.FreyrSwordGoal;
 import net.soulsweaponry.entity.mobs.FreyrSwordEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,8 +24,8 @@ public abstract class FreyrSwordGoalMixin {
             attr = this.entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         }
 
-        float base = ConfigConstructor.sword_of_freyr_damage;
-        float netBonus = (float) Math.max(0.0D, attr - base);
+        float baseline = ConfigHelper.getBaselineValue("freyr_sword.attack_damage_baseline", 15.0F);
+        float netBonus = (float) Math.max(0.0D, attr - baseline);
         cir.setReturnValue(cir.getReturnValueF() + netBonus);
     }
 }

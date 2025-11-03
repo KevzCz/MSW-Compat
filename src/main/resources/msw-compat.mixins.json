@@ -72,8 +72,28 @@
 		"UmbralTrespassMixin",
 		"UmbralTrespassDataAttackerMixin",
 
-		"CometSpearEntityMixin"
+		"CometSpearEntityMixin",
 
+		"KrakenSlayerTrueDamageScalingMixin",
+
+		"item_attribute.MjolnirAttributeMixin",
+		"item_attribute.DarkMoonGreatswordAttributeMixin",
+		"item_attribute.ForlornScytheAttributeMixin",
+		"item_attribute.LeviathanAxeAttributeMixin",
+		"item_attribute.LichBaneAttributeMixin",
+		"item_attribute.MasterSwordAttributeMixin",
+		"item_attribute.NightfallAttributeMixin",
+		"item_attribute.DragonbaneAttributeMixin",
+		"item_attribute.DragonStaffAttributeMixin",
+		"item_attribute.ExcaliburAttributeMixin",
+		"item_attribute.FrostmourneAttributeMixin",
+		"item_attribute.NightsEdgeAttributeMixin",
+		"item_attribute.SoulReaperAttributeMixin",
+		"item_attribute.SupernovaAttributeMixin",
+		"item_attribute.TonitrusAttributeMixin",
+		"item_attribute.GhostGlaiveAttributeMixin",
+		"item_attribute.DawnbreakerAttributeMixin",
+		"item_attribute.EmpoweredDawnbreakerAttributeMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

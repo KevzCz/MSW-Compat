@@ -4,12 +4,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.items.sword.DarkMoonGreatsword;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -22,14 +21,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(DarkMoonGreatsword.class)
 public abstract class DarkMoonGreatswordMixin {
-
-    @Unique private static final Identifier mswcompat$FROST_ID = Identifier.of("spell_power", "frost");
-    @Unique private static final float mswcompat$SPELL_BASELINE = 20F;
-
-    @Unique private static final ThreadLocal<Float> mswcompat$damageFactor =
-            ThreadLocal.withInitial(() -> 1.0F);
-    @Unique private static final ThreadLocal<Integer> mswcompat$ampBonus =
-            ThreadLocal.withInitial(() -> 0);
+    @Unique private static final ThreadLocal<Float> mswcompat$damageFactor = ThreadLocal.withInitial(() -> 1.0F);
+    @Unique private static final ThreadLocal<Integer> mswcompat$ampBonus = ThreadLocal.withInitial(() -> 0);
 
     @Inject(method = "onStoppedUsing", at = @At("HEAD"))
     private void mswcompat$cacheScale(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci) {
@@ -46,17 +39,19 @@ public abstract class DarkMoonGreatswordMixin {
                     adHalf = 1.0F + 0.5F * (full - 1.0F);
                 }
             }
-float frostHalf = 1.0F;
+
+            float frostHalf = 1.0F;
             double frostVal = 0.0;
-            RegistryKey<EntityAttribute> key = RegistryKey.of(RegistryKeys.ATTRIBUTE, mswcompat$FROST_ID);
-            RegistryEntry<EntityAttribute> entry = Registries.ATTRIBUTE.getEntry(key).orElse(null);
+            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
             if (entry != null) {
                 frostVal = user.getAttributeValue(entry);
-                frostHalf = 1.0F + 0.5F * ((float)frostVal / mswcompat$SPELL_BASELINE);
+                float frostBaseline = ConfigHelper.getBaselineValue("dark_moon_greatsword.frost_baseline", 20.0F);
+                frostHalf = 1.0F + 0.5F * ((float)frostVal / frostBaseline);
             }
 
             finalFactor = adHalf * frostHalf;
-            bonusAmp = Math.max(0, (int)Math.floor(frostVal / 10.0));
+            float frostPerAmp = ConfigHelper.getBaselineValue("dark_moon_greatsword.frost_per_amplifier", 10.0F);
+            bonusAmp = Math.max(0, (int)Math.floor(frostVal / frostPerAmp));
         }
 
         mswcompat$damageFactor.set(finalFactor);

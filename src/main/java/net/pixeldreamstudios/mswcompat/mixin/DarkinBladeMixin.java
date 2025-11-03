@@ -4,6 +4,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.config.ConfigConstructor;
 import net.soulsweaponry.items.sword.DarkinBlade;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,29 +21,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(DarkinBlade.class)
 public abstract class DarkinBladeMixin {
 
-    @Unique
-    private static final float mswcompat$BASELINE_ATTACK_DAMAGE = 11.0F;
-
-    @Unique
-    private static final float mswcompat$HEAL_MIN_SCALE = 0.75F;
-
-    @Unique
-    private static final float mswcompat$HEAL_MAX_SCALE = 1.25F;
-
-    @Unique
-    private static final ThreadLocal<Float> mswcompat$healScale = ThreadLocal.withInitial(() -> 1.0F);
-
-    @Unique
-    private static final ThreadLocal<Float> mswcompat$abilityScale = ThreadLocal.withInitial(() -> 1.0F);
+    @Unique private static final ThreadLocal<Float> mswcompat$healScale = ThreadLocal.withInitial(() -> 1.0F);
+    @Unique private static final ThreadLocal<Float> mswcompat$abilityScale = ThreadLocal.withInitial(() -> 1.0F);
 
     @Inject(method = "postHit", at = @At("HEAD"))
     private void mswcompat$cacheHealScale(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfoReturnable<Boolean> cir) {
         float factor = 1.0F;
         if (attacker != null) {
-            double ad = attacker.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) factor = (float)(ad / mswcompat$BASELINE_ATTACK_DAMAGE);
+            float adBaseline = ConfigHelper.getBaselineValue("darkin_blade.attack_damage_baseline", 11.0F);
+
+            if (adBaseline > 0.0F) {
+                double ad = attacker.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                if (ad > 0.0) factor = (float)(ad / adBaseline);
+            }
         }
-        float clamped = Math.max(mswcompat$HEAL_MIN_SCALE, Math.min(mswcompat$HEAL_MAX_SCALE, factor));
+        float minScale = ConfigHelper.getBaselineValue("darkin_blade.heal_min_scale", 0.75F);
+        float maxScale = ConfigHelper.getBaselineValue("darkin_blade.heal_max_scale", 1.25F);
+        float clamped = Math.max(minScale, Math.min(maxScale, factor));
         mswcompat$healScale.set(clamped);
     }
 
@@ -60,8 +55,12 @@ public abstract class DarkinBladeMixin {
     private void mswcompat$cacheAbilityScale(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci) {
         float factor = 1.0F;
         if (user != null) {
-            double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) factor = (float)(ad / mswcompat$BASELINE_ATTACK_DAMAGE);
+            float adBaseline = ConfigHelper.getBaselineValue("darkin_blade.attack_damage_baseline", 11.0F);
+
+            if (adBaseline > 0.0F) {
+                double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                if (ad > 0.0) factor = (float)(ad / adBaseline);
+            }
         }
         mswcompat$abilityScale.set(factor);
     }
@@ -88,8 +87,9 @@ public abstract class DarkinBladeMixin {
     )
     private float mswcompat$scaleCalculatedFallMaxDamage() {
         float base = ConfigConstructor.darkin_blade_calculated_fall_max_damage;
+        float adBaseline = ConfigHelper.getBaselineValue("darkin_blade.attack_damage_baseline", 11.0F);
         float weaponAd = ((DarkinBlade)(Object)this).getAttackDamage();
-        float factor = weaponAd > 0.0F ? weaponAd / mswcompat$BASELINE_ATTACK_DAMAGE : 1.0F;
+        float factor = (adBaseline > 0.0F && weaponAd > 0.0F) ? weaponAd / adBaseline : 1.0F;
         return base * factor;
     }
 }

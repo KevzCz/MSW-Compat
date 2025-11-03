@@ -3,12 +3,11 @@ package net.pixeldreamstudios.mswcompat.mixin;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.config.ConfigConstructor;
 import net.soulsweaponry.items.staff.DragonStaff;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,10 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(DragonStaff.class)
 public abstract class DragonStaffMixin {
 
-    @Unique private static final Identifier mswcompat$ARCANE_ID = Identifier.of("spell_power", "arcane");
-    @Unique private static final float mswcompat$BASELINE = 20F;
-    @Unique private static final float mswcompat$HEAL_CAP = 1.25F;
-
     @Unique private static final ThreadLocal<Float> mswcompat$fogHeal =
             ThreadLocal.withInitial(() -> ConfigConstructor.dragon_staff_vigorous_fog_damage_and_heal);
     @Unique private static final ThreadLocal<Float> mswcompat$fogDamage =
@@ -38,19 +33,22 @@ public abstract class DragonStaffMixin {
     private void mswcompat$cacheArcaneScaling(World world, LivingEntity user, ItemStack stack, int remainingUseTicks, CallbackInfo ci) {
         float arcane = 0.0F;
         if (user != null) {
-            RegistryKey<EntityAttribute> key = RegistryKey.of(RegistryKeys.ATTRIBUTE, mswcompat$ARCANE_ID);
-            RegistryEntry<EntityAttribute> entry = Registries.ATTRIBUTE.getEntry(key).orElse(null);
+            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
             if (entry != null) {
                 arcane = (float) user.getAttributeValue(entry);
             }
         }
 
+        float arcaneBaseline = ConfigHelper.getBaselineValue("dragon_staff.arcane_baseline", 20.0F);
+        float healCap = ConfigHelper.getBaselineValue("dragon_staff.heal_cap_multiplier", 1.25F);
+        float auraPer10 = ConfigHelper.getBaselineValue("dragon_staff.aura_amplifier_per_10_arcane", 1.0F);
+
         float baseFog = ConfigConstructor.dragon_staff_vigorous_fog_damage_and_heal;
-        float factor = 1.0F + (arcane / mswcompat$BASELINE);
+        float factor = arcaneBaseline > 0.0F ? 1.0F + (arcane / arcaneBaseline) : 1.0F;
 
         mswcompat$fogDamage.set(baseFog * factor);
-        mswcompat$fogHeal.set(baseFog * Math.min(mswcompat$HEAL_CAP, factor));
-        mswcompat$auraAmp.set(ConfigConstructor.dragon_staff_aura_strength + arcane / 10.0F);
+        mswcompat$fogHeal.set(baseFog * Math.min(healCap, factor));
+        mswcompat$auraAmp.set(ConfigConstructor.dragon_staff_aura_strength + (arcane / 10.0F) * auraPer10);
     }
 
     @Inject(method = "usageTick", at = @At("TAIL"))

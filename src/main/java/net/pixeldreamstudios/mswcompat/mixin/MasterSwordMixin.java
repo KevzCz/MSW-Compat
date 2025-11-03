@@ -6,6 +6,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.items.sword.MasterSword;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -18,8 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(MasterSword.class)
 public abstract class MasterSwordMixin {
-    @Unique private static final float mswcompat$AD_BASELINE  = 8.0F;
-    @Unique private static final float mswcompat$HP_BASELINE  = 40.0F;
     @Unique private static final ThreadLocal<Float> mswcompat$factor = ThreadLocal.withInitial(() -> 1.0F);
 
     @Inject(
@@ -29,6 +28,10 @@ public abstract class MasterSwordMixin {
     private void mswcompat$cacheScale(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci) {
         float factor = 1.0F;
         if (user != null) {
+            float adBaseline = ConfigHelper.getBaselineValue("master_sword.attack_damage_baseline", 8.0F);
+            float hpBaseline = ConfigHelper.getBaselineValue("master_sword.max_health_baseline", 40.0F);
+            float adWeight = ConfigHelper.getFloatValue("master_sword.attack_damage_weight", 0.5F);
+            float hpWeight = ConfigHelper.getFloatValue("master_sword.max_health_weight", 0.5F);
 
             RegistryEntry<EntityAttribute> adEntry = EntityAttributes.GENERIC_ATTACK_DAMAGE;
             RegistryEntry<EntityAttribute> hpEntry = EntityAttributes.GENERIC_MAX_HEALTH;
@@ -36,10 +39,10 @@ public abstract class MasterSwordMixin {
             double ad = user.getAttributeValue(adEntry);
             double hp = user.getAttributeValue(hpEntry);
 
-            float adPart = mswcompat$AD_BASELINE > 0.0F ? (float)(ad / mswcompat$AD_BASELINE) : 1.0F;
-            float hpPart = mswcompat$HP_BASELINE > 0.0F ? (float)(hp / mswcompat$HP_BASELINE) : 1.0F;
+            float adPart = adBaseline > 0.0F ? (float)(ad / adBaseline) : 1.0F;
+            float hpPart = hpBaseline > 0.0F ? (float)(hp / hpBaseline) : 1.0F;
 
-            factor = 0.5F * adPart + 0.5F * hpPart;
+            factor = adWeight * adPart + hpWeight * hpPart;
             if (factor < 0.0F) factor = 0.0F;
         }
         mswcompat$factor.set(factor);

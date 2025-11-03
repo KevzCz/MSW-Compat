@@ -4,13 +4,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.config.ConfigConstructor;
 import net.soulsweaponry.items.sword.NightsEdgeItem;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,9 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(NightsEdgeItem.class)
 public abstract class NightsEdgeItemMixin {
-    @Unique private static final Identifier mswcompat$ARCANE_ID = Identifier.of("spell_power", "arcane");
-    @Unique private static final float mswcompat$AD_BASELINE = 10.0F;
-    @Unique private static final float mswcompat$ARCANE_BASELINE = 20.0F;
     @Unique private static final ThreadLocal<Float> mswcompat$scale = ThreadLocal.withInitial(() -> 1.0F);
 
     @Inject(
@@ -36,14 +32,18 @@ public abstract class NightsEdgeItemMixin {
     private void mswcompat$cacheScale(World world, LivingEntity user, ItemStack stack, Vec3d position, int warmup, float yaw, CallbackInfo ci) {
         float factor = 1.0F;
         if (user != null) {
+            float adBaseline = ConfigHelper.getBaselineValue("nights_edge.attack_damage_baseline", 10.0F);
+            float arcaneBaseline = ConfigHelper.getBaselineValue("nights_edge.arcane_baseline", 20.0F);
+            float adWeight = ConfigHelper.getFloatValue("nights_edge.attack_damage_weight", 0.5F);
+            float arcaneWeight = ConfigHelper.getFloatValue("nights_edge.arcane_weight", 0.5F);
+
             double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            RegistryKey<EntityAttribute> key = RegistryKey.of(RegistryKeys.ATTRIBUTE, mswcompat$ARCANE_ID);
-            RegistryEntry<EntityAttribute> arcaneEntry = Registries.ATTRIBUTE.getEntry(key).orElse(null);
+            RegistryEntry.Reference<EntityAttribute> arcaneEntry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
             double arcane = arcaneEntry != null ? user.getAttributeValue(arcaneEntry) : 0.0D;
 
-            float adPart = mswcompat$AD_BASELINE > 0.0F ? (float)(ad / mswcompat$AD_BASELINE) : 1.0F;
-            float arcanePart = mswcompat$ARCANE_BASELINE > 0.0F ? (float)(arcane / mswcompat$ARCANE_BASELINE) : 0.0F;
-            factor = 0.5F * adPart + 0.5F * arcanePart;
+            float adPart = adBaseline > 0.0F ? (float)(ad / adBaseline) : 1.0F;
+            float arcanePart = arcaneBaseline > 0.0F ? (float)(arcane / arcaneBaseline) : 0.0F;
+            factor = adWeight * adPart + arcaneWeight * arcanePart;
             if (factor < 0.0F) factor = 0.0F;
         }
         mswcompat$scale.set(factor);

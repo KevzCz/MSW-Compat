@@ -2,9 +2,13 @@ package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.items.axe.LeviathanAxe;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -18,8 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(LeviathanAxe.class)
 public abstract class LeviathanAxeMixin {
-    @Unique private static final Identifier FROST_ID = Identifier.of("spell_power", "frost");
-
     @Unique private static final ThreadLocal<Float> FROST_FACTOR = ThreadLocal.withInitial(() -> 1.0F);
     @Unique private static final ThreadLocal<Integer> AMP_BONUS   = ThreadLocal.withInitial(() -> 0);
 
@@ -31,12 +33,13 @@ public abstract class LeviathanAxeMixin {
         int bonusAmp = 0;
 
         if (attacker instanceof LivingEntity living) {
-            var key   = net.minecraft.registry.RegistryKey.of(net.minecraft.registry.RegistryKeys.ATTRIBUTE, FROST_ID);
-            var entry = net.minecraft.registry.Registries.ATTRIBUTE.getEntry(key).orElse(null);
+            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
             if (entry != null) {
                 double frost = living.getAttributeValue(entry);
-                factor   = 1.0F + (float)(frost / 200.0);
-                bonusAmp = (int)Math.floor(frost / 10.0);
+                float frostBaseline = ConfigHelper.getBaselineValue("leviathan_axe.ice_explosion.frost_baseline", 200.0F);
+                float frostPerAmp = ConfigHelper.getBaselineValue("leviathan_axe.frost_per_amplifier", 10.0F);
+                factor   = 1.0F + (float)(frost / frostBaseline);
+                bonusAmp = (int)Math.floor(frost / frostPerAmp);
             }
         }
         FROST_FACTOR.set(factor);
@@ -70,6 +73,7 @@ public abstract class LeviathanAxeMixin {
         int amp = Math.max(0, original.getAmplifier() + AMP_BONUS.get());
         return target.addStatusEffect(new StatusEffectInstance(type, duration, amp));
     }
+
     @Redirect(
             method = "postHit",
             at = @At(value = "INVOKE",
@@ -79,9 +83,11 @@ public abstract class LeviathanAxeMixin {
                                                             ItemStack stack, LivingEntity tgt, LivingEntity attacker) {
         int bonus = 0;
         if (attacker != null) {
-            var key   = net.minecraft.registry.RegistryKey.of(net.minecraft.registry.RegistryKeys.ATTRIBUTE, FROST_ID);
-            var entry = net.minecraft.registry.Registries.ATTRIBUTE.getEntry(key).orElse(null);
-            if (entry != null) bonus = (int)Math.floor(attacker.getAttributeValue(entry) / 10.0);
+            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
+            if (entry != null) {
+                float frostPerAmp = ConfigHelper.getBaselineValue("leviathan_axe.frost_per_amplifier", 10.0F);
+                bonus = (int)Math.floor(attacker.getAttributeValue(entry) / frostPerAmp);
+            }
         }
         var type = original.getEffectType();
         int duration = original.getDuration();

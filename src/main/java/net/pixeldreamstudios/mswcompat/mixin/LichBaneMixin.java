@@ -3,11 +3,10 @@ package net.pixeldreamstudios.mswcompat.mixin;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.items.sword.LichBane;
 import net.soulsweaponry.mixin.LivingEntityInvoker;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,8 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Pseudo
 @Mixin(LichBane.class)
 public abstract class LichBaneMixin {
-    @Unique private static final Identifier mswcompat$FIRE_ID = Identifier.of("spell_power", "fire");
-    @Unique private static final float mswcompat$FIRE_BASELINE = 20.0F;
     @Unique private static final ThreadLocal<Float> mswcompat$factor = ThreadLocal.withInitial(() -> 1.0F);
 
     @Inject(method = "postHit", at = @At("HEAD"))
@@ -31,19 +28,13 @@ public abstract class LichBaneMixin {
         if (attacker != null) {
             double fire = 0.0D;
 
-            RegistryKey<EntityAttribute> key = RegistryKey.of(RegistryKeys.ATTRIBUTE, mswcompat$FIRE_ID);
-            RegistryEntry<EntityAttribute> entry = Registries.ATTRIBUTE.getEntry(key).orElse(null);
-            if (entry == null) {
-                EntityAttribute attr = Registries.ATTRIBUTE.get(mswcompat$FIRE_ID);
-                if (attr != null) {
-                    entry = Registries.ATTRIBUTE.getEntry(attr);
-                }
-            }
+            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FIRE);
             if (entry != null) {
                 fire = attacker.getAttributeValue(entry);
             }
 
-            factor = 1.0F + (float)(fire / mswcompat$FIRE_BASELINE);
+            float fireBaseline = ConfigHelper.getBaselineValue("lich_bane.fire_baseline", 20.0F);
+            factor = 1.0F + (float)(fire / fireBaseline);
             if (factor < 0.0F) factor = 0.0F;
         }
         mswcompat$factor.set(factor);

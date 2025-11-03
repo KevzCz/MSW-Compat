@@ -7,17 +7,16 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.entity.projectile.DraupnirSpearEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Pseudo
 @Mixin(value = DraupnirSpearEntity.class)
 public abstract class DraupnirSpearEntityMixin {
-    @Unique private static final float BASELINE_AD = 8.0F;
 
     @Redirect(
             method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
@@ -32,9 +31,13 @@ public abstract class DraupnirSpearEntityMixin {
         float factor = 1.0F;
 
         Entity owner = self.getOwner();
-        if (owner instanceof LivingEntity living && BASELINE_AD > 0.0F) {
-            double ad = living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) factor = (float)(ad / BASELINE_AD);
+        if (owner instanceof LivingEntity living) {
+            float adBaseline = ConfigHelper.getBaselineValue("draupnir_spear.attack_damage_baseline", 8.0F);
+
+            if (adBaseline > 0.0F) {
+                double ad = living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                if (ad > 0.0) factor = (float)(ad / adBaseline);
+            }
         }
 
         return target.damage(source, amount * factor);
@@ -52,9 +55,13 @@ public abstract class DraupnirSpearEntityMixin {
                                               float power, boolean createFire, World.ExplosionSourceType type) {
         float factor = 1.0F;
 
-        if (source instanceof LivingEntity living && BASELINE_AD > 0.0F) {
-            double ad = living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) factor = (float)(ad / BASELINE_AD);
+        if (source instanceof LivingEntity living) {
+            float adBaseline = ConfigHelper.getBaselineValue("draupnir_spear.attack_damage_baseline", 8.0F);
+
+            if (adBaseline > 0.0F) {
+                double ad = living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                if (ad > 0.0) factor = (float)(ad / adBaseline);
+            }
         }
 
         float scaled = power * factor;

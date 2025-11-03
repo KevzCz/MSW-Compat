@@ -6,13 +6,12 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,9 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Entity.class)
 public abstract class LightningDamageScalingMixin {
     @Unique
-    private static final Identifier mswcompat$LIGHTNING_POWER_ID = Identifier.of("spell_power", "lightning");
-
-    @Unique
     private static final ThreadLocal<Float> mswcompat$add = ThreadLocal.withInitial(() -> 0.0F);
 
     @Inject(method = "onStruckByLightning", at = @At("HEAD"))
@@ -33,11 +29,11 @@ public abstract class LightningDamageScalingMixin {
         float add = 0.0F;
         ServerPlayerEntity sp = lightning.getChanneler();
         if (sp != null) {
-            RegistryKey<EntityAttribute> key = RegistryKey.of(RegistryKeys.ATTRIBUTE, mswcompat$LIGHTNING_POWER_ID);
-            RegistryEntry<EntityAttribute> entry = Registries.ATTRIBUTE.getEntry(key).orElse(null);
+            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.LIGHTNING);
             if (entry != null) {
                 double power = sp.getAttributeValue(entry);
-                add = (float) (power / 2.0);
+                double damagePerPower = ConfigHelper.getDoubleValue("lightning.damage_per_spell_power", 0.5);
+                add = (float) (power * damagePerPower);
             }
         }
         mswcompat$add.set(add);
@@ -61,21 +57,26 @@ public abstract class LightningDamageScalingMixin {
             return instance.damage(source, baseAmount);
         }
 
-        if (instance == channeler) {
+        boolean damageChanneler = ConfigHelper.getBooleanValue("lightning.damage_channeler", false);
+        if (instance == channeler && !damageChanneler) {
             return false;
         }
 
-        if (instance instanceof PassiveEntity) {
+        boolean damagePassive = ConfigHelper.getBooleanValue("lightning.damage_passive_entities", false);
+        if (instance instanceof PassiveEntity && !damagePassive) {
             return false;
         }
-        if (instance instanceof TameableEntity tame && tame.isTamed()) {
+
+        boolean damageTamed = ConfigHelper.getBooleanValue("lightning.damage_tamed_entities", false);
+        if (instance instanceof TameableEntity tame && tame.isTamed() && !damageTamed) {
             return false;
         }
 
         float amount = baseAmount + mswcompat$add.get();
 
         if (instance instanceof PlayerEntity) {
-            amount *= 0.9F;
+            float playerMultiplier = ConfigHelper.getFloatValue("lightning.player_damage_multiplier", 0.9F);
+            amount *= playerMultiplier;
         }
 
         return instance.damage(source, amount);

@@ -7,6 +7,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.config.ConfigConstructor;
 import net.soulsweaponry.items.sword.WhirligigSawblade;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,10 +22,15 @@ public abstract class WhirligigSawbladeMixin {
     @Unique
     private static float mswcompat$scale(LivingEntity user) {
         if (user == null) return 1.0F;
+
+        float adBaseline = ConfigHelper.getBaselineValue("whirligig_sawblade.attack_damage_baseline", 11.0F);
+
+        if (adBaseline <= 0.0F) return 1.0F;
+
         double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-        float baseline = (float) ConfigConstructor.whirligig_sawblade_damage;
-        if (ad <= 0.0 || baseline <= 0.0F) return 1.0F;
-        return (float)(ad / baseline);
+        if (ad <= 0.0) return 1.0F;
+
+        return (float)(ad / adBaseline);
     }
 
     @Redirect(
