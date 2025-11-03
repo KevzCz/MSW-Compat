@@ -55,6 +55,8 @@ public class MSWCompatConfig {
     public BloodthirsterConfig bloodthirster = new BloodthirsterConfig();
     public BladeDanceConfig blade_dance = new BladeDanceConfig();
     public BloodlustConfig bloodlust = new BloodlustConfig();
+    public DarkmoonLongbowConfig darkmoon_longbow = new DarkmoonLongbowConfig();
+    public GaleforceConfig galeforce = new GaleforceConfig();
     public static MSWCompatConfig getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new MSWCompatConfig();
@@ -282,7 +284,7 @@ public class MSWCompatConfig {
     }
 
     public static class GhostGlaiveConfig {
-        public double frostSpellPowerBonus = 4.0;
+        public double arcaneSpellPowerBonus = 4.0;
         public float attackDamageBaseline = 10.0F;
         public float frostBaseline = 20.0F;
         public float attackDamageWeight = 0.5F;
@@ -325,5 +327,15 @@ public class MSWCompatConfig {
         public float attackDamageBaseline = 7.0F;
         public float selfDamageCapHearts = 12.0F;
         public float selfDamageCapHealthPercent = 0.5F;
+    }
+    public static class DarkmoonLongbowConfig {
+        public double arcaneSpellPowerBonus = 4.0;
+        public float rangedDamageBaseline = 9.0F;
+        public float arcaneBaseline = 20.0F;
+        public float rangedDamageWeight = 0.05F;
+        public float arcaneWeight = 0.075F;
+    }
+    public static class GaleforceConfig {
+        public float rangedDamageBaseline = 9.0F;
     }
 }

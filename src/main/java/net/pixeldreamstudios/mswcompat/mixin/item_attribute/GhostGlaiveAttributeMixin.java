@@ -33,14 +33,14 @@ public abstract class GhostGlaiveAttributeMixin {
             return;
         }
 
-        double frostBonus = ConfigHelper.getDoubleValue("ghost_glaive.frost_spell_power_bonus", 4.0);
+        double arcaneBonus = ConfigHelper.getDoubleValue("ghost_glaive.arcane_spell_power_bonus", 4.0);
 
-        if (frostBonus != 0.0) {
-            RegistryEntry.Reference<EntityAttribute> frostAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
+        if (arcaneBonus != 0.0) {
+            RegistryEntry.Reference<EntityAttribute> frostAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
             if (frostAttr != null) {
                 EntityAttributeModifier frostModifier = new EntityAttributeModifier(
-                        MSWCompatIdentifiers.ModifierIds.GHOST_GLAIVE_FROST,
-                        frostBonus,
+                        MSWCompatIdentifiers.ModifierIds.GHOST_GLAIVE_ARCANE,
+                        arcaneBonus,
                         EntityAttributeModifier.Operation.ADD_VALUE
                 );
                 attributeModifierConsumer.accept(frostAttr, frostModifier);
@@ -57,14 +57,14 @@ public abstract class GhostGlaiveAttributeMixin {
             return;
         }
 
-        double frostBonus = ConfigHelper.getDoubleValue("ghost_glaive.frost_spell_power_bonus", 4.0);
+        double arcaneBonus = ConfigHelper.getDoubleValue("ghost_glaive.arcane_spell_power_bonus", 4.0);
 
-        if (frostBonus != 0.0) {
-            RegistryEntry.Reference<EntityAttribute> frostAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
+        if (arcaneBonus != 0.0) {
+            RegistryEntry.Reference<EntityAttribute> frostAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
             if (frostAttr != null) {
                 EntityAttributeModifier frostModifier = new EntityAttributeModifier(
-                        MSWCompatIdentifiers.ModifierIds.GHOST_GLAIVE_FROST,
-                        frostBonus,
+                        MSWCompatIdentifiers.ModifierIds.GHOST_GLAIVE_ARCANE,
+                        arcaneBonus,
                         EntityAttributeModifier.Operation.ADD_VALUE
                 );
                 attributeModifierConsumer.accept(frostAttr, frostModifier);

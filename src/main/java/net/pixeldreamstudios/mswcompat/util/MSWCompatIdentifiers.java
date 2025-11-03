@@ -47,10 +47,10 @@ public class MSWCompatIdentifiers {
         public static final Identifier DRAGONBANE_LIGHTNING = Identifier.of("msw-compat", "dragonbane_lightning");
         public static final Identifier DRAGON_STAFF_ARCANE = Identifier.of("msw-compat", "dragon_staff_arcane");
         public static final Identifier TONITRUS_LIGHTNING = Identifier.of("msw-compat", "tonitrus_lightning");
-        public static final Identifier GHOST_GLAIVE_FROST = Identifier.of("msw-compat", "ghost_glaive_frost");
+        public static final Identifier GHOST_GLAIVE_ARCANE = Identifier.of("msw-compat", "ghost_glaive_arcane");
         public static final Identifier DAWNBREAKER_FIRE = Identifier.of("msw-compat", "dawnbreaker_fire");
         public static final Identifier EMPOWERED_DAWNBREAKER_FIRE = Identifier.of("msw-compat", "empowered_dawnbreaker_fire");
-
+        public static final Identifier DARKMOON_LONGBOW_ARCANE = Identifier.of("msw-compat", "darkmoon_longbow_arcane");
         private ModifierIds() {}
     }
 

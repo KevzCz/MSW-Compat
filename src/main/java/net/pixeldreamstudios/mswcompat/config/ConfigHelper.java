@@ -127,6 +127,12 @@ public class ConfigHelper {
                 return config.bloodlust.selfDamageCapHearts;
             case "bloodlust.self_damage_cap_health_percent":
                 return config.bloodlust.selfDamageCapHealthPercent;
+            case "darkmoon_longbow.ranged_damage_baseline":
+                return config.darkmoon_longbow.rangedDamageBaseline;
+            case "darkmoon_longbow.arcane_baseline":
+                return config.darkmoon_longbow.arcaneBaseline;
+            case "galeforce.ranged_damage_baseline":
+                return config.galeforce.rangedDamageBaseline;
             default:
                 return defaultValue;
         }
@@ -183,12 +189,14 @@ public class ConfigHelper {
                 return config.dragon_staff.arcaneSpellPowerBonus;
             case "tonitrus.lightning_spell_power_bonus":
                 return config.tonitrus.lightningSpellPowerBonus;
-            case "ghost_glaive.frost_spell_power_bonus":
-                return config.ghost_glaive.frostSpellPowerBonus;
+            case "ghost_glaive.arcane_spell_power_bonus":
+                return config.ghost_glaive.arcaneSpellPowerBonus;
             case "dawnbreaker.fire_spell_power_bonus":
                 return config.dawnbreaker.fireSpellPowerBonus;
             case "empowered_dawnbreaker.fire_spell_power_bonus":
                 return config.empowered_dawnbreaker.fireSpellPowerBonus;
+            case "darkmoon_longbow.arcane_spell_power_bonus":
+                return config.darkmoon_longbow.arcaneSpellPowerBonus;
             default:
                 return defaultValue;
         }
@@ -249,6 +257,10 @@ public class ConfigHelper {
                 return config.blade_dance.attackDamageWeight;
             case "blade_dance.attack_speed_weight":
                 return config.blade_dance.attackSpeedWeight;
+            case "darkmoon_longbow.ranged_damage_weight":
+                return config.darkmoon_longbow.rangedDamageWeight;
+            case "darkmoon_longbow.arcane_weight":
+                return config.darkmoon_longbow.arcaneWeight;
             default:
                 return defaultValue;
         }

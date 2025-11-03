@@ -75,6 +75,8 @@
 		"CometSpearEntityMixin",
 
 		"KrakenSlayerTrueDamageScalingMixin",
+		"GaleforceAbilityScalingMixin",
+		"DarkmoonLongbowAbilityScalingMixin",
 
 		"item_attribute.MjolnirAttributeMixin",
 		"item_attribute.DarkMoonGreatswordAttributeMixin",
@@ -93,7 +95,8 @@
 		"item_attribute.TonitrusAttributeMixin",
 		"item_attribute.GhostGlaiveAttributeMixin",
 		"item_attribute.DawnbreakerAttributeMixin",
-		"item_attribute.EmpoweredDawnbreakerAttributeMixin"
+		"item_attribute.EmpoweredDawnbreakerAttributeMixin",
+		"item_attribute.DarkmoonLongbowAttributeMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
