@@ -28,22 +28,22 @@ public abstract class GhostGlaiveMixin {
         if (!(owner instanceof LivingEntity living)) return 1.0F;
 
         float adBaseline = ConfigHelper.getBaselineValue("ghost_glaive.attack_damage_baseline", 10.0F);
-        float frostBaseline = ConfigHelper.getBaselineValue("ghost_glaive.frost_baseline", 20.0F);
+        float arcaneBaseline = ConfigHelper.getBaselineValue("ghost_glaive.arcane_baseline", 20.0F);
         float adWeight = ConfigHelper.getFloatValue("ghost_glaive.attack_damage_weight", 0.5F);
-        float frostWeight = ConfigHelper.getFloatValue("ghost_glaive.frost_weight", 0.5F);
+        float arcaneWeight = ConfigHelper.getFloatValue("ghost_glaive.arcane_weight", 0.5F);
 
         float ad = (float) living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-        float frost = 0.0F;
+        float arcane = 0.0F;
 
-        RegistryEntry.Reference<EntityAttribute> frostRef = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
-        if (frostRef != null) {
-            frost = (float) living.getAttributeValue(frostRef);
+        RegistryEntry.Reference<EntityAttribute> arcaneRef = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
+        if (arcaneRef != null) {
+            arcane = (float) living.getAttributeValue(arcaneRef);
         }
 
         float adPart = adBaseline > 0.0F ? ad / adBaseline : 1.0F;
-        float frostPart = frostBaseline > 0.0F ? frost / frostBaseline : 0.0F;
+        float arcanePart = arcaneBaseline > 0.0F ? arcane / arcaneBaseline : 0.0F;
 
-        float factor = adWeight * adPart + frostWeight * frostPart;
+        float factor = adWeight * adPart + arcaneWeight * arcanePart;
         return Math.max(0.0F, factor);
     }
 

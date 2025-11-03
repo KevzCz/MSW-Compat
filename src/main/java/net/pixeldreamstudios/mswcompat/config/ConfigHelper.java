@@ -99,8 +99,8 @@ public class ConfigHelper {
                 return config.tonitrus.amplifierPerLightning;
             case "ghost_glaive.attack_damage_baseline":
                 return config.ghost_glaive.attackDamageBaseline;
-            case "ghost_glaive.frost_baseline":
-                return config.ghost_glaive.frostBaseline;
+            case "ghost_glaive.arcane_baseline":
+                return config.ghost_glaive.arcaneBaseline;
             case "freyr_sword.attack_damage_baseline":
                 return config.freyr_sword.attackDamageBaseline;
             case "dawnbreaker.fire_baseline":
@@ -251,8 +251,8 @@ public class ConfigHelper {
                 return config.nightfall.soulWeight;
             case "ghost_glaive.attack_damage_weight":
                 return config.ghost_glaive.attackDamageWeight;
-            case "ghost_glaive.frost_weight":
-                return config.ghost_glaive.frostWeight;
+            case "ghost_glaive.arcane_weight":
+                return config.ghost_glaive.arcaneWeight;
             case "blade_dance.attack_damage_weight":
                 return config.blade_dance.attackDamageWeight;
             case "blade_dance.attack_speed_weight":

@@ -286,9 +286,9 @@ public class MSWCompatConfig {
     public static class GhostGlaiveConfig {
         public double arcaneSpellPowerBonus = 4.0;
         public float attackDamageBaseline = 10.0F;
-        public float frostBaseline = 20.0F;
+        public float arcaneBaseline = 20.0F;
         public float attackDamageWeight = 0.5F;
-        public float frostWeight = 0.5F;
+        public float arcaneWeight = 0.5F;
     }
 
     public static class FreyrSwordConfig {

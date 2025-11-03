@@ -36,14 +36,14 @@ public abstract class GhostGlaiveAttributeMixin {
         double arcaneBonus = ConfigHelper.getDoubleValue("ghost_glaive.arcane_spell_power_bonus", 4.0);
 
         if (arcaneBonus != 0.0) {
-            RegistryEntry.Reference<EntityAttribute> frostAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
-            if (frostAttr != null) {
-                EntityAttributeModifier frostModifier = new EntityAttributeModifier(
+            RegistryEntry.Reference<EntityAttribute> arcaneAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
+            if (arcaneAttr != null) {
+                EntityAttributeModifier arcaneModifier = new EntityAttributeModifier(
                         MSWCompatIdentifiers.ModifierIds.GHOST_GLAIVE_ARCANE,
                         arcaneBonus,
                         EntityAttributeModifier.Operation.ADD_VALUE
                 );
-                attributeModifierConsumer.accept(frostAttr, frostModifier);
+                attributeModifierConsumer.accept(arcaneAttr, arcaneModifier);
             }
         }
     }
@@ -60,14 +60,14 @@ public abstract class GhostGlaiveAttributeMixin {
         double arcaneBonus = ConfigHelper.getDoubleValue("ghost_glaive.arcane_spell_power_bonus", 4.0);
 
         if (arcaneBonus != 0.0) {
-            RegistryEntry.Reference<EntityAttribute> frostAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
-            if (frostAttr != null) {
-                EntityAttributeModifier frostModifier = new EntityAttributeModifier(
+            RegistryEntry.Reference<EntityAttribute> arcaneAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
+            if (arcaneAttr != null) {
+                EntityAttributeModifier arcaneModifier = new EntityAttributeModifier(
                         MSWCompatIdentifiers.ModifierIds.GHOST_GLAIVE_ARCANE,
                         arcaneBonus,
                         EntityAttributeModifier.Operation.ADD_VALUE
                 );
-                attributeModifierConsumer.accept(frostAttr, frostModifier);
+                attributeModifierConsumer.accept(arcaneAttr, arcaneModifier);
             }
         }
     }
