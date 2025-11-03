@@ -197,6 +197,8 @@ public class ConfigHelper {
                 return config.empowered_dawnbreaker.fireSpellPowerBonus;
             case "darkmoon_longbow.arcane_spell_power_bonus":
                 return config.darkmoon_longbow.arcaneSpellPowerBonus;
+            case "freyr_sword.pet_inheritance_bonus":
+                return config.freyr_sword.petInheritanceBonus;
             default:
                 return defaultValue;
         }
@@ -211,6 +213,14 @@ public class ConfigHelper {
                 return config.lightning.damageTamedEntities;
             case "lightning.damage_channeler":
                 return config.lightning.damageChanneler;
+            case "soul_reaper.use_kevslibrary_pet_inheritance_attribute":
+                return config.soul_reaper.useKevslibraryPetInheritanceAttribute;
+            case "frostmourne.use_kevslibrary_pet_inheritance_attribute":
+                return config.frostmourne.useKevslibraryPetInheritanceAttribute;
+            case "nightfall.use_kevslibrary_pet_inheritance_attribute":
+                return config.nightfall.useKevslibraryPetInheritanceAttribute;
+            case "freyr_sword.use_kevslibrary_pet_inheritance_attribute":
+                return config.freyr_sword.useKevslibraryPetInheritanceAttribute;
             default:
                 return defaultValue;
         }

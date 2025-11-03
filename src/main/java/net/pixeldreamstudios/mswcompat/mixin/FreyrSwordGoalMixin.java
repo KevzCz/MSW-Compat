@@ -24,7 +24,7 @@ public abstract class FreyrSwordGoalMixin {
             attr = this.entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         }
 
-        float baseline = ConfigHelper.getBaselineValue("freyr_sword.attack_damage_baseline", 15.0F);
+        float baseline = ConfigHelper.getBaselineValue("freyr_sword.attack_damage_baseline", 7.0F);
         float netBonus = (float) Math.max(0.0D, attr - baseline);
         cir.setReturnValue(cir.getReturnValueF() + netBonus);
     }

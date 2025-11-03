@@ -96,7 +96,11 @@
 		"item_attribute.GhostGlaiveAttributeMixin",
 		"item_attribute.DawnbreakerAttributeMixin",
 		"item_attribute.EmpoweredDawnbreakerAttributeMixin",
-		"item_attribute.DarkmoonLongbowAttributeMixin"
+		"item_attribute.DarkmoonLongbowAttributeMixin",
+		"item_attribute.FreyrSwordAttributeMixin",
+
+		"entity.RemnantSpawnMixin",
+		"entity.FreyrSwordEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

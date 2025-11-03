@@ -28,7 +28,6 @@ public class MSWCompatIdentifiers {
     }
 
     public static final class ModifierIds {
-        // Using SoulsWeaponry namespace with actual item IDs
         public static final Identifier MJOLNIR_LIGHTNING = Identifier.of("soulsweapons", "mjolnir");
         public static final Identifier NIGHTFALL_SOUL = Identifier.of("soulsweapons", "nightfall");
         public static final Identifier NIGHTFALL_PET_INHERITANCE = Identifier.of("soulsweapons", "nightfall");
@@ -52,7 +51,7 @@ public class MSWCompatIdentifiers {
         public static final Identifier DAWNBREAKER_FIRE = Identifier.of("soulsweapons", "dawnbreaker");
         public static final Identifier EMPOWERED_DAWNBREAKER_FIRE = Identifier.of("soulsweapons", "empowered_dawnbreaker");
         public static final Identifier DARKMOON_LONGBOW_ARCANE = Identifier.of("soulsweapons", "darkmoon_longbow");
-
+        public static final Identifier FREYR_SWORD_PET_INHERITANCE = Identifier.of("soulsweapons", "freyr_sword");
         private ModifierIds() {}
     }
 

@@ -57,6 +57,7 @@ public class MSWCompatConfig {
     public BloodlustConfig bloodlust = new BloodlustConfig();
     public DarkmoonLongbowConfig darkmoon_longbow = new DarkmoonLongbowConfig();
     public GaleforceConfig galeforce = new GaleforceConfig();
+
     public static MSWCompatConfig getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new MSWCompatConfig();
@@ -112,6 +113,7 @@ public class MSWCompatConfig {
     public static class NightfallConfig {
         public double soulSpellPowerBonus = 3.0;
         public double petInheritanceBonus = 0.1;
+        public boolean useKevslibraryPetInheritanceAttribute = false;
         public float attackDamageBaseline = 11.0F;
         public float soulBaseline = 20.0F;
         public float attackDamageWeight = 0.5F;
@@ -208,11 +210,13 @@ public class MSWCompatConfig {
     public static class SoulReaperConfig {
         public double soulSpellPowerBonus = 2.0;
         public double petInheritanceBonus = 0.15;
+        public boolean useKevslibraryPetInheritanceAttribute = false;
     }
 
     public static class FrostmourneConfig {
         public double frostSpellPowerBonus = 3.0;
         public double petInheritanceBonus = 0.075;
+        public boolean useKevslibraryPetInheritanceAttribute = false;
         public float frostBaseline = 20.0F;
         public float frostPerAmplifier = 10.0F;
     }
@@ -292,8 +296,11 @@ public class MSWCompatConfig {
     }
 
     public static class FreyrSwordConfig {
-        public float attackDamageBaseline = 15.0F;
+        public float attackDamageBaseline = 7.0F;
+        public double petInheritanceBonus = 0.2;
+        public boolean useKevslibraryPetInheritanceAttribute = false;
     }
+
     public static class DawnbreakerConfig {
         public double fireSpellPowerBonus = 2.0;
         public float fireBaseline = 20.0F;
@@ -307,6 +314,7 @@ public class MSWCompatConfig {
     public static class DraupnirSpearConfig {
         public float attackDamageBaseline = 8.0F;
     }
+
     public static class DragonslayerSwordBerserkConfig {
         public float attackDamageBaseline = 12.0F;
     }
@@ -316,6 +324,7 @@ public class MSWCompatConfig {
         public float healMinScale = 0.75F;
         public float healMaxScale = 1.50F;
     }
+
     public static class BladeDanceConfig {
         public float attackDamageBaseline = 8.0F;
         public float attackSpeedBaseline = 1.3F;
@@ -328,6 +337,7 @@ public class MSWCompatConfig {
         public float selfDamageCapHearts = 12.0F;
         public float selfDamageCapHealthPercent = 0.5F;
     }
+
     public static class DarkmoonLongbowConfig {
         public double arcaneSpellPowerBonus = 4.0;
         public float rangedDamageBaseline = 9.0F;
@@ -335,6 +345,7 @@ public class MSWCompatConfig {
         public float rangedDamageWeight = 0.05F;
         public float arcaneWeight = 0.075F;
     }
+
     public static class GaleforceConfig {
         public float rangedDamageBaseline = 9.0F;
     }

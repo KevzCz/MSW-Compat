@@ -7,6 +7,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.config.MSWCompatConfig;
 import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.items.scythe.SoulReaper;
@@ -34,7 +35,6 @@ public abstract class SoulReaperAttributeMixin {
         }
 
         double soulBonus = ConfigHelper.getDoubleValue("soul_reaper.soul_spell_power_bonus", 2.0);
-        double petInheritanceBonus = ConfigHelper.getDoubleValue("soul_reaper.pet_inheritance_bonus", 0.15);
 
         if (soulBonus != 0.0) {
             RegistryEntry.Reference<EntityAttribute> soulAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.SOUL);
@@ -48,15 +48,18 @@ public abstract class SoulReaperAttributeMixin {
             }
         }
 
-        if (petInheritanceBonus != 0.0) {
-            RegistryEntry.Reference<EntityAttribute> petAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.KevsLibrary.PET_INHERITANCE_RATIO);
-            if (petAttr != null) {
-                EntityAttributeModifier petModifier = new EntityAttributeModifier(
-                        MSWCompatIdentifiers.ModifierIds.SOUL_REAPER_PET_INHERITANCE,
-                        petInheritanceBonus,
-                        EntityAttributeModifier.Operation.ADD_VALUE
-                );
-                attributeModifierConsumer.accept(petAttr, petModifier);
+        if (MSWCompatConfig.getInstance().soul_reaper.useKevslibraryPetInheritanceAttribute) {
+            double petInheritanceBonus = ConfigHelper.getDoubleValue("soul_reaper.pet_inheritance_bonus", 0.15);
+            if (petInheritanceBonus != 0.0) {
+                RegistryEntry.Reference<EntityAttribute> petAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.KevsLibrary.PET_INHERITANCE_RATIO);
+                if (petAttr != null) {
+                    EntityAttributeModifier petModifier = new EntityAttributeModifier(
+                            MSWCompatIdentifiers.ModifierIds.SOUL_REAPER_PET_INHERITANCE,
+                            petInheritanceBonus,
+                            EntityAttributeModifier.Operation.ADD_VALUE
+                    );
+                    attributeModifierConsumer.accept(petAttr, petModifier);
+                }
             }
         }
     }
@@ -71,7 +74,6 @@ public abstract class SoulReaperAttributeMixin {
         }
 
         double soulBonus = ConfigHelper.getDoubleValue("soul_reaper.soul_spell_power_bonus", 2.0);
-        double petInheritanceBonus = ConfigHelper.getDoubleValue("soul_reaper.pet_inheritance_bonus", 0.15);
 
         if (soulBonus != 0.0) {
             RegistryEntry.Reference<EntityAttribute> soulAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.SOUL);
@@ -85,15 +87,18 @@ public abstract class SoulReaperAttributeMixin {
             }
         }
 
-        if (petInheritanceBonus != 0.0) {
-            RegistryEntry.Reference<EntityAttribute> petAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.KevsLibrary.PET_INHERITANCE_RATIO);
-            if (petAttr != null) {
-                EntityAttributeModifier petModifier = new EntityAttributeModifier(
-                        MSWCompatIdentifiers.ModifierIds.SOUL_REAPER_PET_INHERITANCE,
-                        petInheritanceBonus,
-                        EntityAttributeModifier.Operation.ADD_VALUE
-                );
-                attributeModifierConsumer.accept(petAttr, petModifier);
+        if (MSWCompatConfig.getInstance().soul_reaper.useKevslibraryPetInheritanceAttribute) {
+            double petInheritanceBonus = ConfigHelper.getDoubleValue("soul_reaper.pet_inheritance_bonus", 0.15);
+            if (petInheritanceBonus != 0.0) {
+                RegistryEntry.Reference<EntityAttribute> petAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.KevsLibrary.PET_INHERITANCE_RATIO);
+                if (petAttr != null) {
+                    EntityAttributeModifier petModifier = new EntityAttributeModifier(
+                            MSWCompatIdentifiers.ModifierIds.SOUL_REAPER_PET_INHERITANCE,
+                            petInheritanceBonus,
+                            EntityAttributeModifier.Operation.ADD_VALUE
+                    );
+                    attributeModifierConsumer.accept(petAttr, petModifier);
+                }
             }
         }
     }
