@@ -296,7 +296,11 @@ public class MSWCompatConfig {
     }
 
     public static class FreyrSwordConfig {
+        public double soulSpellPowerBonus = 4.0;
         public float attackDamageBaseline = 7.0F;
+        public float soulBaseline = 20.0F;
+        public float attackDamageWeight = 0.75F;
+        public float soulWeight = 1.0F;
         public double petInheritanceBonus = 0.2;
         public boolean useKevslibraryPetInheritanceAttribute = false;
     }

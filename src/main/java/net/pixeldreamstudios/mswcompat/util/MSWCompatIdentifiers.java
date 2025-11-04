@@ -52,6 +52,7 @@ public class MSWCompatIdentifiers {
         public static final Identifier EMPOWERED_DAWNBREAKER_FIRE = Identifier.of("soulsweapons", "empowered_dawnbreaker");
         public static final Identifier DARKMOON_LONGBOW_ARCANE = Identifier.of("soulsweapons", "darkmoon_longbow");
         public static final Identifier FREYR_SWORD_PET_INHERITANCE = Identifier.of("soulsweapons", "freyr_sword");
+        public static final Identifier FREYR_SWORD_SOUL = Identifier.of("soulsweapons", "freyr_sword");
         private ModifierIds() {}
     }
 

@@ -103,6 +103,8 @@ public class ConfigHelper {
                 return config.ghost_glaive.arcaneBaseline;
             case "freyr_sword.attack_damage_baseline":
                 return config.freyr_sword.attackDamageBaseline;
+            case "freyr_sword.soul_baseline":
+                return config.freyr_sword.soulBaseline;
             case "dawnbreaker.fire_baseline":
                 return config.dawnbreaker.fireBaseline;
             case "empowered_dawnbreaker.fire_baseline":
@@ -197,6 +199,8 @@ public class ConfigHelper {
                 return config.empowered_dawnbreaker.fireSpellPowerBonus;
             case "darkmoon_longbow.arcane_spell_power_bonus":
                 return config.darkmoon_longbow.arcaneSpellPowerBonus;
+            case "freyr_sword.soul_spell_power_bonus":
+                return config.freyr_sword.soulSpellPowerBonus;
             case "freyr_sword.pet_inheritance_bonus":
                 return config.freyr_sword.petInheritanceBonus;
             default:
@@ -271,6 +275,10 @@ public class ConfigHelper {
                 return config.darkmoon_longbow.rangedDamageWeight;
             case "darkmoon_longbow.arcane_weight":
                 return config.darkmoon_longbow.arcaneWeight;
+            case "freyr_sword.attack_damage_weight":
+                return config.freyr_sword.attackDamageWeight;
+            case "freyr_sword.soul_weight":
+                return config.freyr_sword.soulWeight;
             default:
                 return defaultValue;
         }

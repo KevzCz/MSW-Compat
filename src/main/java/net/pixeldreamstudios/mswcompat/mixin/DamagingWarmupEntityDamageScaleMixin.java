@@ -21,11 +21,19 @@ public abstract class DamagingWarmupEntityDamageScaleMixin {
 
     @Unique
     private float mswcompat$computeScale() {
-        Entity owner = ((DamagingWarmupEntity)(Object)this).getOwner();
+        DamagingWarmupEntity self = (DamagingWarmupEntity)(Object)this;
+        Entity owner = self.getOwner();
+
         if (!(owner instanceof LivingEntity living)) return 1.0F;
 
+        if (self instanceof FlamePillar pillar) {
+            if (pillar.getEventId() == 0) {
+                return 1.0F;
+            }
+        }
+
         float fireBaseline = ConfigHelper.getBaselineValue("supernova.fire_baseline", 20.0F);
-        boolean isFlamePillar = (Object)this instanceof FlamePillar;
+        boolean isFlamePillar = self instanceof FlamePillar;
         float scaling = isFlamePillar
                 ? ConfigHelper.getBaselineValue("supernova.flame_pillar_scaling", 0.75F)
                 : ConfigHelper.getBaselineValue("supernova.molten_metal_scaling", 0.25F);

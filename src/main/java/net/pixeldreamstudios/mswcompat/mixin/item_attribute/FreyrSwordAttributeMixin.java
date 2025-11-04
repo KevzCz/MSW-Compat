@@ -34,6 +34,19 @@ public abstract class FreyrSwordAttributeMixin {
             return;
         }
 
+        double soulSpellPowerBonus = ConfigHelper.getDoubleValue("freyr_sword.soul_spell_power_bonus", 4.0);
+        if (soulSpellPowerBonus != 0.0) {
+            RegistryEntry.Reference<EntityAttribute> soulAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.SOUL);
+            if (soulAttr != null) {
+                EntityAttributeModifier soulModifier = new EntityAttributeModifier(
+                        MSWCompatIdentifiers.ModifierIds.FREYR_SWORD_SOUL,
+                        soulSpellPowerBonus,
+                        EntityAttributeModifier.Operation.ADD_VALUE
+                );
+                attributeModifierConsumer.accept(soulAttr, soulModifier);
+            }
+        }
+
         if (MSWCompatConfig.getInstance().freyr_sword.useKevslibraryPetInheritanceAttribute) {
             double petInheritanceBonus = ConfigHelper.getDoubleValue("freyr_sword.pet_inheritance_bonus", 0.2);
             if (petInheritanceBonus != 0.0) {
@@ -57,6 +70,19 @@ public abstract class FreyrSwordAttributeMixin {
     private void mswcompat$addFreyrSwordAttributesEquipment(EquipmentSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifierConsumer, CallbackInfo ci) {
         if (!(this.getItem() instanceof FreyrSword) || slot != EquipmentSlot.MAINHAND) {
             return;
+        }
+
+        double soulSpellPowerBonus = ConfigHelper.getDoubleValue("freyr_sword.soul_spell_power_bonus", 4.0);
+        if (soulSpellPowerBonus != 0.0) {
+            RegistryEntry.Reference<EntityAttribute> soulAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.SOUL);
+            if (soulAttr != null) {
+                EntityAttributeModifier soulModifier = new EntityAttributeModifier(
+                        MSWCompatIdentifiers.ModifierIds.FREYR_SWORD_SOUL,
+                        soulSpellPowerBonus,
+                        EntityAttributeModifier.Operation.ADD_VALUE
+                );
+                attributeModifierConsumer.accept(soulAttr, soulModifier);
+            }
         }
 
         if (MSWCompatConfig.getInstance().freyr_sword.useKevslibraryPetInheritanceAttribute) {
