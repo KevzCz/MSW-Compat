@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin(value = DamagingWarmupEntity.class)
+@Mixin( value = DamagingWarmupEntity.class, remap = false )
 public abstract class MjolnirWarmupLightningAttributionMixin {
 
     @Inject(method = "onTrigger", at = @At("HEAD"), cancellable = true, remap = false)

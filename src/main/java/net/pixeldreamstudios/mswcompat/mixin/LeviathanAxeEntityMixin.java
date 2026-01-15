@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin(LeviathanAxeEntity.class)
+@Mixin( value = LeviathanAxeEntity.class, remap = false )
 public abstract class LeviathanAxeEntityMixin {
     @Unique private static final ThreadLocal<Float> mswcompat$damageFactor = ThreadLocal.withInitial(() -> 1.0F);
 
@@ -75,7 +75,7 @@ public abstract class LeviathanAxeEntityMixin {
             }
         }
 
-        net.minecraft.registry.entry.RegistryEntry<StatusEffect> type = original.getEffectType();
+        RegistryEntry<StatusEffect> type = original.getEffectType();
         int duration = original.getDuration();
         int amp = Math.max(0, original.getAmplifier() + bonus);
         return target.addStatusEffect(new StatusEffectInstance(type, duration, amp));

@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin(MjolnirProjectile.class)
+@Mixin( value = MjolnirProjectile.class, remap = false )
 public abstract class MjolnirProjectileDamageMixin {
     @Unique private static final ThreadLocal<Float> mswcompat$factor = ThreadLocal.withInitial(() -> 1.0F);
     @Unique private static final ThreadLocal<Boolean> mswcompat$didScale = ThreadLocal.withInitial(() -> false);

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Pseudo
-@Mixin(value = DamagingWarmupEntity.class, remap = false)
+@Mixin( value = DamagingWarmupEntity.class, remap = false)
 public abstract class DamagingWarmupEntityDamageScaleMixin {
 
     @Unique
@@ -27,7 +27,7 @@ public abstract class DamagingWarmupEntityDamageScaleMixin {
         if (!(owner instanceof LivingEntity living)) return 1.0F;
 
         if (self instanceof FlamePillar pillar) {
-            if (pillar.getEventId() == 0) {
+            if (pillar.getEventId() == -1) {
                 return 1.0F;
             }
         }

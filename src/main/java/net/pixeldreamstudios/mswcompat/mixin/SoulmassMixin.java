@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(targets = "net.soulsweaponry.entity.mobs.Soulmass$SoulmassGoal")
+@Mixin( targets = "net.soulsweaponry.entity.mobs.Soulmass$SoulmassGoal")
 public abstract class SoulmassMixin {
 
     @Unique

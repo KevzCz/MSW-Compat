@@ -3,9 +3,9 @@ package net.pixeldreamstudios.mswcompat.mixin;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Entity.class)
+@Mixin( value = Entity.class, remap = false )
 public abstract class LightningDamageScalingMixin {
     @Unique
     private static final ThreadLocal<Float> mswcompat$add = ThreadLocal.withInitial(() -> 0.0F);

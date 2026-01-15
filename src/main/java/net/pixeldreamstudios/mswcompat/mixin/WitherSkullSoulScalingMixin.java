@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(WitherSkullEntity.class)
+@Mixin( value = WitherSkullEntity.class, remap = false )
 public abstract class WitherSkullSoulScalingMixin {
 
     @Unique

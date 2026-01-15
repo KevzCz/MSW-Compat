@@ -23,8 +23,20 @@ public class MSWCompatIdentifiers {
 
     public static final class KevsLibrary {
         public static final Identifier PET_INHERITANCE_RATIO = Identifier.of("kevslibrary", "pet_inheritance_ratio");
-
+        public static final Identifier DAMAGE = Identifier.of("kevslibrary", "damage");
         private KevsLibrary() {}
+    }
+    public static final class SpellEngine {
+        public static final Identifier HEALING_TAKEN = Identifier.of("spell_engine", "healing_taken");
+
+        private SpellEngine() {}
+    }
+    public static final class MoreRPGLibrary {
+        public static final Identifier RAGE = Identifier.of("more_rpg_classes", "rage_modifier");
+        public static final Identifier WATER = Identifier.of("spell_power", "water");
+        public static final Identifier AIR = Identifier.of("spell_power", "air");
+
+        private MoreRPGLibrary() {}
     }
 
     public static final class ModifierIds {
@@ -53,6 +65,18 @@ public class MSWCompatIdentifiers {
         public static final Identifier DARKMOON_LONGBOW_ARCANE = Identifier.of("soulsweapons", "darkmoon_longbow");
         public static final Identifier FREYR_SWORD_PET_INHERITANCE = Identifier.of("soulsweapons", "freyr_sword");
         public static final Identifier FREYR_SWORD_SOUL = Identifier.of("soulsweapons", "freyr_sword");
+        public static final Identifier DRAGONSLAYER_SWORDSPEAR_LIGHTNING = Identifier.of("soulsweapons", "dragonslayer_swordspear");
+        public static final Identifier NIGHTLORDS_SWORD_RAGE = Identifier.of("soulsweapons", "nightlords_sword");
+        public static final Identifier NIGHTLORDS_SWORD_ARCANE = Identifier.of("soulsweapons", "nightlords_sword");
+        public static final Identifier NIGHTLORDS_SWORD_LIGHTNING = Identifier.of("soulsweapons", "nightlords_sword");
+        public static final Identifier NIGHTLORDS_SWORD_SOUL = Identifier.of("soulsweapons", "nightlords_sword");
+        public static final Identifier NIGHTLORDS_SWORD_WATER = Identifier.of("soulsweapons", "nightlords_sword");
+        public static final Identifier NIGHTLORDS_SWORD_FROST = Identifier.of("soulsweapons", "nightlords_sword");
+        public static final Identifier NIGHTLORDS_SWORD_FIRE = Identifier.of("soulsweapons", "nightlords_sword");
+        public static final Identifier NIGHTLORDS_SWORD_ATTACK_SPEED = Identifier.of("soulsweapons", "nightlords_sword");
+        public static final Identifier NIGHTLORDS_SWORD_HEALING = Identifier.of("soulsweapons", "nightlords_sword");
+        public static final Identifier POTENCY_DAMAGE_BONUS = Identifier.of("soulsweapons", "nightlords_sword");
+
         private ModifierIds() {}
     }
 

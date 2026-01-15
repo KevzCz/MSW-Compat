@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Pseudo
-@Mixin(value = DamagingNoClipEntity.class, remap = false)
+@Mixin( value = DamagingNoClipEntity.class, remap = false)
 public abstract class GhostGlaiveMixin {
 
     @Unique

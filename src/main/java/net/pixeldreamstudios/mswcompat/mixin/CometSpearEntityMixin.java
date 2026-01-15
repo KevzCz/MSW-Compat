@@ -3,30 +3,29 @@ package net.pixeldreamstudios.mswcompat.mixin;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.hit.EntityHitResult;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.entity.projectile.CometSpearEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin(value = CometSpearEntity.class)
+@Mixin( value = CometSpearEntity.class, remap = false )
 public abstract class CometSpearEntityMixin {
+    @Unique private static final ThreadLocal<Float> mswcompat$scale = ThreadLocal.withInitial(() -> 1.0F);
 
-    @Redirect(
+    @Inject(
             method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"
-            ),
+            at = @At("HEAD"),
             require = 0
     )
-    private boolean mswcompat$scaleCometDamage(Entity target, DamageSource source, float amount, EntityHitResult hit) {
+    private void mswcompat$cacheScale(EntityHitResult entityHitResult, CallbackInfo ci) {
         CometSpearEntity self = (CometSpearEntity)(Object)this;
-
         float factor = 1.0F;
         Entity owner = self.getOwner();
         float baseline = ConfigHelper.getBaselineValue("comet_spear.attack_damage_baseline", 8.0F);
@@ -36,6 +35,25 @@ public abstract class CometSpearEntityMixin {
             if (ad > 0.0) factor = (float)(ad / baseline);
         }
 
-        return target.damage(source, amount * factor);
+        mswcompat$scale.set(factor);
+    }
+
+    @ModifyVariable(
+            method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
+            at = @At(value = "STORE"),
+            ordinal = 0,
+            require = 0
+    )
+    private float mswcompat$scaleBaseDamage(float f) {
+        return f * mswcompat$scale.get();
+    }
+
+    @Inject(
+            method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
+            at = @At("TAIL"),
+            require = 0
+    )
+    private void mswcompat$clearScale(EntityHitResult entityHitResult, CallbackInfo ci) {
+        mswcompat$scale.remove();
     }
 }

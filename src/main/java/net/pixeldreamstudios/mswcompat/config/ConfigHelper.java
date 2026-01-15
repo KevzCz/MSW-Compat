@@ -7,6 +7,10 @@ public class ConfigHelper {
         switch (key) {
             case "mjolnir.projectile.attack_damage_baseline":
                 return config.mjolnir.projectile.attackDamageBaseline;
+            case "mjolnir.lightning_baseline":
+                return config.mjolnir.lightningBaseline;
+            case "mjolnir.water_baseline":
+                return config.mjolnir.waterBaseline;
             case "nightfall.attack_damage_baseline":
                 return config.nightfall.attackDamageBaseline;
             case "nightfall.soul_baseline":
@@ -25,10 +29,16 @@ public class ConfigHelper {
                 return config.master_sword.attackDamageBaseline;
             case "master_sword.max_health_baseline":
                 return config.master_sword.maxHealthBaseline;
+            case "dark_moon_greatsword.attack_damage_baseline":
+                return config.dark_moon_greatsword.attackDamageBaseline;
             case "dark_moon_greatsword.frost_baseline":
                 return config.dark_moon_greatsword.frostBaseline;
             case "dark_moon_greatsword.frost_per_amplifier":
                 return config.dark_moon_greatsword.frostPerAmplifier;
+            case "dark_moon_greatsword.attack_damage_weight":
+                return config.dark_moon_greatsword.attackDamageWeight;
+            case "dark_moon_greatsword.frost_weight":
+                return config.dark_moon_greatsword.frostWeight;
             case "moonlight_greatsword.attack_damage_baseline":
                 return config.moonlight_greatsword.attackDamageBaseline;
             case "bluemoon_greatsword.attack_damage_baseline":
@@ -77,6 +87,12 @@ public class ConfigHelper {
                 return config.supernova.moltenMetalScaling;
             case "moonveil.attack_damage_baseline":
                 return config.moonveil.attackDamageBaseline;
+            case "moonveil.rage_baseline":
+                return config.moonveil.rageBaseline;
+            case "moonveil.bleed_buildup_min_scale":
+                return config.moonveil.bleedBuildupMinScale;
+            case "moonveil.bleed_buildup_max_scale":
+                return config.moonveil.bleedBuildupMaxScale;
             case "dragonbane.lightning_baseline":
                 return config.dragonbane.lightningBaseline;
             case "dragon_staff.arcane_baseline":
@@ -91,8 +107,24 @@ public class ConfigHelper {
                 return config.darkin_blade.healMinScale;
             case "darkin_blade.heal_max_scale":
                 return config.darkin_blade.healMaxScale;
+            case "darkin_scythe_prime.attack_damage_baseline":
+                return config.darkin_scythe_prime.attackDamageBaseline;
+            case "darkin_scythe_prime.heal_min_scale":
+                return config.darkin_scythe_prime.healMinScale;
+            case "darkin_scythe_prime.heal_max_scale":
+                return config.darkin_scythe_prime.healMaxScale;
             case "whirligig_sawblade.attack_damage_baseline":
                 return config.whirligig_sawblade.attackDamageBaseline;
+            case "whirligig_sawblade.rage_baseline":
+                return config.whirligig_sawblade.rageBaseline;
+            case "whirligig_sawblade.damage_min_scale":
+                return config.whirligig_sawblade.damageMinScale;
+            case "whirligig_sawblade.damage_max_scale":
+                return config.whirligig_sawblade.damageMaxScale;
+            case "whirligig_sawblade.bleed_min_scale":
+                return config.whirligig_sawblade.bleedMinScale;
+            case "whirligig_sawblade.bleed_max_scale":
+                return config.whirligig_sawblade.bleedMaxScale;
             case "tonitrus.lightning_baseline":
                 return config.tonitrus.lightningBaseline;
             case "tonitrus.amplifier_per_lightning":
@@ -111,30 +143,66 @@ public class ConfigHelper {
                 return config.empowered_dawnbreaker.fireBaseline;
             case "draupnir_spear.attack_damage_baseline":
                 return config.draupnir_spear.attackDamageBaseline;
-            case "dragonslayer_sword_berserk.attack_damage_baseline":
-                return config.dragonslayer_sword_berserk.attackDamageBaseline;
+            case "dragonslayer_swordspear.lightning_baseline":
+                return config.dragonslayer_swordspear.lightningBaseline;
+            case "dragonslayer_swordspear.water_baseline":
+                return config.dragonslayer_swordspear.waterBaseline;
             case "bloodthirster.attack_damage_baseline":
                 return config.bloodthirster.attackDamageBaseline;
+            case "bloodthirster.rage_baseline":
+                return config.bloodthirster.rageBaseline;
             case "bloodthirster.heal_min_scale":
                 return config.bloodthirster.healMinScale;
             case "bloodthirster.heal_max_scale":
                 return config.bloodthirster.healMaxScale;
+            case "bloodthirster.overheal_min_scale":
+                return config.bloodthirster.overhealMinScale;
+            case "bloodthirster.overheal_max_scale":
+                return config.bloodthirster.overhealMaxScale;
             case "blade_dance.attack_damage_baseline":
                 return config.blade_dance.attackDamageBaseline;
             case "blade_dance.attack_speed_baseline":
                 return config.blade_dance.attackSpeedBaseline;
             case "bloodlust.attack_damage_baseline":
                 return config.bloodlust.attackDamageBaseline;
+            case "bloodlust.rage_baseline":
+                return config.bloodlust.rageBaseline;
             case "bloodlust.self_damage_cap_hearts":
                 return config.bloodlust.selfDamageCapHearts;
             case "bloodlust.self_damage_cap_health_percent":
                 return config.bloodlust.selfDamageCapHealthPercent;
+            case "bloodlust.bleed_buildup_min_scale":
+                return config.bloodlust.bleedBuildupMinScale;
+            case "bloodlust.bleed_buildup_max_scale":
+                return config.bloodlust.bleedBuildupMaxScale;
             case "darkmoon_longbow.ranged_damage_baseline":
                 return config.darkmoon_longbow.rangedDamageBaseline;
             case "darkmoon_longbow.arcane_baseline":
                 return config.darkmoon_longbow.arcaneBaseline;
             case "galeforce.ranged_damage_baseline":
                 return config.galeforce.rangedDamageBaseline;
+            case "galeforce.air_baseline":
+                return config.galeforce.airBaseline;
+            case "heap_of_raw_iron.attack_damage_baseline":
+                return config.heap_of_raw_iron.attackDamageBaseline;
+            case "heap_of_raw_iron.rage_baseline":
+                return config.heap_of_raw_iron.rageBaseline;
+            case "kraken_slayer.damage_per_true_damage_bonus":
+                return config.kraken_slayer.damagePerTrueDamageBonus;
+            case "kraken_slayer_bow.ranged_damage_baseline":
+                return config.kraken_slayer_bow.rangedDamageBaseline;
+            case "kraken_slayer_crossbow.ranged_damage_baseline":
+                return config.kraken_slayer_crossbow.rangedDamageBaseline;
+            case "blood_loss.attack_damage_baseline":
+                return config.blood_loss.attackDamageBaseline;
+            case "blood_loss.rage_baseline":
+                return config.blood_loss.rageBaseline;
+            case "blood_loss.min_scale":
+                return config.blood_loss.minScale;
+            case "blood_loss.max_scale":
+                return config.blood_loss.maxScale;
+            case "nightlords_sword.attack_damage_baseline":
+                return config.nightlords_sword.attackDamageBaseline;
             default:
                 return defaultValue;
         }
@@ -203,6 +271,10 @@ public class ConfigHelper {
                 return config.freyr_sword.soulSpellPowerBonus;
             case "freyr_sword.pet_inheritance_bonus":
                 return config.freyr_sword.petInheritanceBonus;
+            case "dragonslayer_swordspear.lightning_spell_power_bonus":
+                return config.dragonslayer_swordspear.lightningSpellPowerBonus;
+            case "nightlords_sword.amp_per_attack_damage":
+                return config.nightlords_sword.ampPerAttackDamage;
             default:
                 return defaultValue;
         }
@@ -279,6 +351,50 @@ public class ConfigHelper {
                 return config.freyr_sword.attackDamageWeight;
             case "freyr_sword.soul_weight":
                 return config.freyr_sword.soulWeight;
+            case "dragonslayer_swordspear.lightning_weight":
+                return config.dragonslayer_swordspear.lightningWeight;
+            case "dragonslayer_swordspear.water_weight":
+                return config.dragonslayer_swordspear.waterWeight;
+            case "dragonslayer_swordspear.rain_lightning_weight":
+                return config.dragonslayer_swordspear.rainLightningWeight;
+            case "dragonslayer_swordspear.rain_water_weight":
+                return config.dragonslayer_swordspear.rainWaterWeight;
+            case "dragonslayer_swordspear.lightning_per_spell_power":
+                return config.dragonslayer_swordspear.lightningPerSpellPower;
+            case "galeforce.ranged_weight":
+                return config.galeforce.rangedWeight;
+            case "galeforce.air_weight":
+                return config.galeforce.airWeight;
+            case "blood_loss.attack_damage_weight":
+                return config.blood_loss.attackDamageWeight;
+            case "blood_loss.rage_weight":
+                return config.blood_loss.rageWeight;
+            case "moonveil.attack_damage_weight":
+                return config.moonveil.attackDamageWeight;
+            case "moonveil.rage_weight":
+                return config.moonveil.rageWeight;
+            case "moonveil.bleed_attack_damage_weight":
+                return config.moonveil.bleedAttackDamageWeight;
+            case "moonveil.bleed_rage_weight":
+                return config.moonveil.bleedRageWeight;
+            case "bloodlust.bleed_attack_damage_weight":
+                return config.bloodlust.bleedAttackDamageWeight;
+            case "bloodlust.bleed_rage_weight":
+                return config.bloodlust.bleedRageWeight;
+            case "dark_moon_greatsword.attack_damage_weight":
+                return config.dark_moon_greatsword.attackDamageWeight;
+            case "dark_moon_greatsword.frost_weight":
+                return config.dark_moon_greatsword.frostWeight;
+            case "whirligig_sawblade.attack_damage_weight":
+                return config.whirligig_sawblade.attackDamageWeight;
+            case "whirligig_sawblade.rage_weight":
+                return config.whirligig_sawblade.rageWeight;
+            case "whirligig_sawblade.bleed_rage_weight":
+                return config.whirligig_sawblade.bleedRageWeight;
+            case "mjolnir.rain_lightning_weight":
+                return config.mjolnir.rainLightningWeight;
+            case "mjolnir.rain_water_weight":
+                return config.mjolnir.rainWaterWeight;
             default:
                 return defaultValue;
         }

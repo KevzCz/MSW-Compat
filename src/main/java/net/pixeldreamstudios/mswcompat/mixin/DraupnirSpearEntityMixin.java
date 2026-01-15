@@ -5,8 +5,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.entity.projectile.DraupnirSpearEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Pseudo
-@Mixin(value = DraupnirSpearEntity.class)
+@Mixin( value = DraupnirSpearEntity.class, remap = false )
 public abstract class DraupnirSpearEntityMixin {
 
     @Redirect(
@@ -41,30 +39,5 @@ public abstract class DraupnirSpearEntityMixin {
         }
 
         return target.damage(source, amount * factor);
-    }
-
-    @Redirect(
-            method = "detonate()V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;createExplosion(Lnet/minecraft/entity/Entity;DDD F Z Lnet/minecraft/world/World$ExplosionSourceType;)Lnet/minecraft/world/explosion/Explosion;"
-            ),
-            require = 0
-    )
-    private Explosion mswcompat$scaleDetonate(World world, Entity source, double x, double y, double z,
-                                              float power, boolean createFire, World.ExplosionSourceType type) {
-        float factor = 1.0F;
-
-        if (source instanceof LivingEntity living) {
-            float adBaseline = ConfigHelper.getBaselineValue("draupnir_spear.attack_damage_baseline", 8.0F);
-
-            if (adBaseline > 0.0F) {
-                double ad = living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                if (ad > 0.0) factor = (float)(ad / adBaseline);
-            }
-        }
-
-        float scaled = power * factor;
-        return world.createExplosion(source, x, y, z, scaled, createFire, type);
     }
 }

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Remnant.class)
+@Mixin( value = Remnant.class, remap = false )
 public abstract class RemnantSpawnMixin {
 
     @Unique

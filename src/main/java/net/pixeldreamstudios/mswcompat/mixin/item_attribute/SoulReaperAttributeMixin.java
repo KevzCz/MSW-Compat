@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.BiConsumer;
 
-@Mixin(ItemStack.class)
+@Mixin( value = ItemStack.class)
 public abstract class SoulReaperAttributeMixin {
 
     @Shadow

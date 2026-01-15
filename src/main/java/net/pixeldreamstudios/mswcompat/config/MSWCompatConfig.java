@@ -44,6 +44,7 @@ public class MSWCompatConfig {
     public DragonbaneConfig dragonbane = new DragonbaneConfig();
     public DragonStaffConfig dragon_staff = new DragonStaffConfig();
     public DarkinBladeConfig darkin_blade = new DarkinBladeConfig();
+    public DarkinScythePrimeConfig darkin_scythe_prime = new DarkinScythePrimeConfig();
     public WhirligigSawbladeConfig whirligig_sawblade = new WhirligigSawbladeConfig();
     public TonitrusConfig tonitrus = new TonitrusConfig();
     public GhostGlaiveConfig ghost_glaive = new GhostGlaiveConfig();
@@ -51,13 +52,18 @@ public class MSWCompatConfig {
     public DawnbreakerConfig dawnbreaker = new DawnbreakerConfig();
     public EmpoweredDawnbreakerConfig empowered_dawnbreaker = new EmpoweredDawnbreakerConfig();
     public DraupnirSpearConfig draupnir_spear = new DraupnirSpearConfig();
-    public DragonslayerSwordBerserkConfig dragonslayer_sword_berserk = new DragonslayerSwordBerserkConfig();
+    public DragonslayerSwordspearConfig dragonslayer_swordspear = new DragonslayerSwordspearConfig();
     public BloodthirsterConfig bloodthirster = new BloodthirsterConfig();
     public BladeDanceConfig blade_dance = new BladeDanceConfig();
     public BloodlustConfig bloodlust = new BloodlustConfig();
     public DarkmoonLongbowConfig darkmoon_longbow = new DarkmoonLongbowConfig();
     public GaleforceConfig galeforce = new GaleforceConfig();
-
+    public HeapOfRawIronConfig heap_of_raw_iron = new HeapOfRawIronConfig();
+    public KrakenSlayerConfig kraken_slayer = new KrakenSlayerConfig();
+    public KrakenSlayerBowConfig kraken_slayer_bow = new KrakenSlayerBowConfig();
+    public KrakenSlayerCrossbowConfig kraken_slayer_crossbow = new KrakenSlayerCrossbowConfig();
+    public BloodLossConfig blood_loss = new BloodLossConfig();
+    public NightlordsSwordConfig nightlords_sword = new NightlordsSwordConfig();
     public static MSWCompatConfig getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new MSWCompatConfig();
@@ -100,9 +106,16 @@ public class MSWCompatConfig {
 
     private MSWCompatConfig() {
     }
-
+    public static class NightlordsSwordConfig {
+        public float attackDamageBaseline = 10.0F;
+        public float ampPerAttackDamage = 5.0F;
+    }
     public static class MjolnirConfig {
         public double lightningSpellPowerBonus = 4.0;
+        public float lightningBaseline = 20.0F;
+        public float waterBaseline = 20.0F;
+        public float rainLightningWeight = 0.5F;
+        public float rainWaterWeight = 0.5F;
         public ProjectileConfig projectile = new ProjectileConfig();
 
         public static class ProjectileConfig {
@@ -153,8 +166,11 @@ public class MSWCompatConfig {
 
     public static class DarkMoonGreatswordConfig {
         public double frostSpellPowerBonus = 3.0;
+        public float attackDamageBaseline = 10.0F;
         public float frostBaseline = 20.0F;
         public float frostPerAmplifier = 10.0F;
+        public float attackDamageWeight = 0.5F;
+        public float frostWeight = 0.5F;
     }
 
     public static class MoonlightGreatswordConfig {
@@ -183,7 +199,7 @@ public class MSWCompatConfig {
 
     public static class UmbralTrespassConfig {
         public float darkinScytheBaseline = 12.0F;
-        public float shadowAssassinScytheBaseline = 13.0F;
+        public float shadowAssassinScytheBaseline = 12.0F;
     }
 
     public static class WitherSkullConfig {
@@ -257,6 +273,13 @@ public class MSWCompatConfig {
 
     public static class MoonveilConfig {
         public float attackDamageBaseline = 11.0F;
+        public float rageBaseline = 100.0F;
+        public float attackDamageWeight = 0.7F;
+        public float rageWeight = 0.3F;
+        public float bleedAttackDamageWeight = 0.7F;
+        public float bleedRageWeight = 0.3F;
+        public float bleedBuildupMinScale = 0.5F;
+        public float bleedBuildupMaxScale = 2.0F;
     }
 
     public static class DragonbaneConfig {
@@ -277,8 +300,22 @@ public class MSWCompatConfig {
         public float healMaxScale = 1.25F;
     }
 
+    public static class DarkinScythePrimeConfig {
+        public float attackDamageBaseline = 9.0F;
+        public float healMinScale = 0.75F;
+        public float healMaxScale = 1.25F;
+    }
+
     public static class WhirligigSawbladeConfig {
         public float attackDamageBaseline = 11.0F;
+        public float rageBaseline = 100.0F;
+        public float attackDamageWeight = 0.7F;
+        public float rageWeight = 0.3F;
+        public float bleedRageWeight = 0.5F;
+        public float damageMinScale = 0.5F;
+        public float damageMaxScale = 10.0F;
+        public float bleedMinScale = 0.5F;
+        public float bleedMaxScale = 12.5F;
     }
 
     public static class TonitrusConfig {
@@ -319,14 +356,24 @@ public class MSWCompatConfig {
         public float attackDamageBaseline = 8.0F;
     }
 
-    public static class DragonslayerSwordBerserkConfig {
-        public float attackDamageBaseline = 12.0F;
+    public static class DragonslayerSwordspearConfig {
+        public float lightningBaseline = 20.0F;
+        public float waterBaseline = 20.0F;
+        public float lightningWeight = 0.5F;
+        public float waterWeight = 0.5F;
+        public float rainLightningWeight = 0.5F;
+        public float rainWaterWeight = 0.5F;
+        public float lightningPerSpellPower = 0.1F;
+        public double lightningSpellPowerBonus = 4.0;
     }
 
     public static class BloodthirsterConfig {
         public float attackDamageBaseline = 8.0F;
+        public float rageBaseline = 100.0F;
         public float healMinScale = 0.75F;
         public float healMaxScale = 1.50F;
+        public float overhealMinScale = 0.75F;
+        public float overhealMaxScale = 1.50F;
     }
 
     public static class BladeDanceConfig {
@@ -338,19 +385,53 @@ public class MSWCompatConfig {
 
     public static class BloodlustConfig {
         public float attackDamageBaseline = 7.0F;
+        public float rageBaseline = 100.0F;
         public float selfDamageCapHearts = 12.0F;
         public float selfDamageCapHealthPercent = 0.5F;
+        public float bleedAttackDamageWeight = 0.7F;
+        public float bleedRageWeight = 0.3F;
+        public float bleedBuildupMinScale = 0.5F;
+        public float bleedBuildupMaxScale = 2.0F;
     }
 
     public static class DarkmoonLongbowConfig {
         public double arcaneSpellPowerBonus = 4.0;
         public float rangedDamageBaseline = 9.0F;
         public float arcaneBaseline = 20.0F;
-        public float rangedDamageWeight = 0.05F;
-        public float arcaneWeight = 0.075F;
+        public float rangedDamageWeight = 0.5F;
+        public float arcaneWeight = 0.5F;
     }
 
     public static class GaleforceConfig {
         public float rangedDamageBaseline = 9.0F;
+        public float airBaseline = 20.0F;
+        public float rangedWeight = 0.7F;
+        public float airWeight = 0.3F;
+    }
+
+    public static class HeapOfRawIronConfig {
+        public float attackDamageBaseline = 12.0F;
+        public float rageBaseline = 100.0F;
+    }
+
+    public static class KrakenSlayerConfig {
+        public float damagePerTrueDamageBonus = 5.0F;
+    }
+
+    public static class KrakenSlayerBowConfig {
+        public float rangedDamageBaseline = 7.0F;
+    }
+
+    public static class KrakenSlayerCrossbowConfig {
+        public float rangedDamageBaseline = 9.0F;
+    }
+
+    public static class BloodLossConfig {
+        public float attackDamageBaseline = 10.0F;
+        public float rageBaseline = 100.0F;
+        public float attackDamageWeight = 0.5F;
+        public float rageWeight = 0.75F;
+        public float minScale = 0.5F;
+        public float maxScale = 10.0F;
     }
 }
