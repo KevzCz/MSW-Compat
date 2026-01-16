@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin( value = LeviathanAxeEntity.class, remap = false )
+@Mixin( value = LeviathanAxeEntity.class)
 public abstract class LeviathanAxeEntityMixin {
     @Unique private static final ThreadLocal<Float> mswcompat$damageFactor = ThreadLocal.withInitial(() -> 1.0F);
 

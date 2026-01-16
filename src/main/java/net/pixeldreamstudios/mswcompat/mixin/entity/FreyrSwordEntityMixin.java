@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin( value = FreyrSwordEntity.class, remap = false )
+@Mixin( value = FreyrSwordEntity.class )
 public abstract class FreyrSwordEntityMixin {
 
     @Unique
@@ -28,7 +28,7 @@ public abstract class FreyrSwordEntityMixin {
         if (freyrSword.isTamed() && freyrSword.getOwner() instanceof PlayerEntity owner) {
             MSWCompatConfig.FreyrSwordConfig config = MSWCompatConfig.getInstance().freyr_sword;
 
-            if (!config.useKevslibraryPetInheritanceAttribute) {
+            if (! config.useKevslibraryPetInheritanceAttribute) {
                 NbtCompound previousData = new NbtCompound();
                 double ratio = config.petInheritanceBonus;
                 PetInheritanceUtil.apply(owner, freyrSword, previousData, ratio);
@@ -37,12 +37,12 @@ public abstract class FreyrSwordEntityMixin {
         }
     }
 
-    @Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
-    private void tmsompat$writeAttributesApplied(NbtCompound nbt, CallbackInfo ci) {
+    @Inject(method = "writeCustomDataToNbt", at = @At("RETURN"), remap = true)
+    private void mswcompat$writeAttributesApplied(NbtCompound nbt, CallbackInfo ci) {
         nbt.putBoolean("mswcompat_attributes_applied", mswcompat$attributesApplied);
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("RETURN"))
+    @Inject(method = "readCustomDataFromNbt", at = @At("RETURN"), remap = true)
     private void mswcompat$readAttributesApplied(NbtCompound nbt, CallbackInfo ci) {
         if (nbt.contains("mswcompat_attributes_applied")) {
             mswcompat$attributesApplied = nbt.getBoolean("mswcompat_attributes_applied");

@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin( value = Entity.class, remap = false )
+@Mixin( value = Entity.class)
 public abstract class LightningDamageScalingMixin {
     @Unique
     private static final ThreadLocal<Float> mswcompat$add = ThreadLocal.withInitial(() -> 0.0F);

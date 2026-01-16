@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin( value = CometSpearEntity.class, remap = false )
+@Mixin( value = CometSpearEntity.class)
 public abstract class CometSpearEntityMixin {
     @Unique private static final ThreadLocal<Float> mswcompat$scale = ThreadLocal.withInitial(() -> 1.0F);
 

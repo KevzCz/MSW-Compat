@@ -11,13 +11,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin( value = Remnant.class, remap = false )
+@Mixin( value = Remnant.class)
 public abstract class RemnantSpawnMixin {
 
     @Unique
     private boolean mswcompat$attributesApplied = false;
 
-    @Inject(method = "tickMovement", at = @At("HEAD"))
+    @Inject(method = "tickMovement", at = @At("HEAD"), remap = true)
     private void mswcompat$applyOwnerStatsOnce(CallbackInfo ci) {
         Remnant remnant = (Remnant) (Object) this;
 
@@ -32,7 +32,7 @@ public abstract class RemnantSpawnMixin {
             if (remnant instanceof Forlorn || remnant instanceof Soulmass || remnant instanceof SoulReaperGhost) {
                 MSWCompatConfig.SoulReaperConfig config = MSWCompatConfig.getInstance().soul_reaper;
                 useKevsLibrary = config.useKevslibraryPetInheritanceAttribute;
-                if (!useKevsLibrary) {
+                if (! useKevsLibrary) {
                     ratio = config.petInheritanceBonus;
                 }
             } else if (remnant instanceof FrostGiant || remnant instanceof RimeSpectre) {
@@ -49,7 +49,7 @@ public abstract class RemnantSpawnMixin {
                 }
             }
 
-            if (ratio != null && !useKevsLibrary) {
+            if (ratio != null && ! useKevsLibrary) {
                 NbtCompound previousData = new NbtCompound();
                 PetInheritanceUtil.apply(owner, remnant, previousData, ratio);
                 mswcompat$attributesApplied = true;
@@ -57,12 +57,12 @@ public abstract class RemnantSpawnMixin {
         }
     }
 
-    @Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
+    @Inject(method = "writeCustomDataToNbt", at = @At("RETURN"), remap = true)
     private void mswcompat$writeAttributesApplied(NbtCompound nbt, CallbackInfo ci) {
         nbt.putBoolean("mswcompat_attributes_applied", mswcompat$attributesApplied);
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("RETURN"))
+    @Inject(method = "readCustomDataFromNbt", at = @At("RETURN"), remap = true)
     private void mswcompat$readAttributesApplied(NbtCompound nbt, CallbackInfo ci) {
         if (nbt.contains("mswcompat_attributes_applied")) {
             mswcompat$attributesApplied = nbt.getBoolean("mswcompat_attributes_applied");

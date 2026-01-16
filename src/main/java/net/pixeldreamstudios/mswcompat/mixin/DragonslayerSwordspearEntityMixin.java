@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin( value = DragonslayerSwordspearEntity. class)
+@Mixin( value = DragonslayerSwordspearEntity.class, remap = false)
 public abstract class DragonslayerSwordspearEntityMixin {
     @Unique
     private static final ThreadLocal<Entity> mswcompat$projectileOwner = ThreadLocal.withInitial(() -> null);

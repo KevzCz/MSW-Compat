@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin( value = EvokerFangsEntity.class, remap = false )
+@Mixin( value = EvokerFangsEntity.class)
 public abstract class EvokerFangsScalingMixin {
 
     @Unique

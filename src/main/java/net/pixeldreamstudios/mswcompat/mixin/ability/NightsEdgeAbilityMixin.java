@@ -17,11 +17,11 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin( value = NightsEdgeAbility.class, remap = false )
+@Mixin( value = NightsEdgeAbility.class )
 public abstract class NightsEdgeAbilityMixin {
     @Unique private static final ThreadLocal<Float> mswcompat$damageScale = ThreadLocal.withInitial(() -> 1.0F);
     @Unique private static final ThreadLocal<Boolean> mswcompat$shouldScale = ThreadLocal.withInitial(() -> false);
@@ -66,14 +66,14 @@ public abstract class NightsEdgeAbilityMixin {
         mswcompat$damageScale.set(Math.max(0.0F, factor));
     }
 
-    @ModifyVariable(
+    @ModifyArg(
             method = "spawnNightsEdge(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/util/math/Vec3d;IFF)V",
-            at = @At("HEAD"),
-            ordinal = 1,
-            argsOnly = true
+            at = @At(value = "INVOKE",
+                    target = "Lnet/soulsweaponry/entity/projectile/noclip/NightsEdge;setDamage(F)V"),
+            index = 0
     )
     private float mswcompat$scaleDamage(float damage) {
-        if (!mswcompat$shouldScale.get()) {
+        if (! mswcompat$shouldScale.get()) {
             return damage;
         }
         return damage * mswcompat$damageScale.get();

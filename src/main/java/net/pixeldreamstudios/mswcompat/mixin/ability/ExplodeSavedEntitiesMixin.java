@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin( value = ExplodeSavedEntities. class)
+@Mixin( value = ExplodeSavedEntities.class, remap = false)
 public abstract class ExplodeSavedEntitiesMixin {
     @Unique private static final ThreadLocal<Float> mswcompat$damageScale = ThreadLocal.withInitial(() -> 1.0F);
     @Unique private static final ThreadLocal<Float> mswcompat$explosionScale = ThreadLocal.withInitial(() -> 1.0F);
