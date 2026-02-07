@@ -10,6 +10,7 @@ import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.customarrows.GaleArrows;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -46,16 +47,11 @@ public abstract class GaleArrowsMixin {
             float airWeight = ConfigHelper.getFloatValue("galeforce.air_weight", 0.3F);
 
             double ranged = 0.0;
-            double air = 0.0;
+            double air = SpellPowerHelper.getEffectiveSpellPower(shooter, MSWCompatIdentifiers.MoreRPGLibrary.AIR);
 
             RegistryEntry.Reference<EntityAttribute> rangedAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.RangedWeapon.DAMAGE);
             if (rangedAttr != null) {
                 ranged = shooter.getAttributeValue(rangedAttr);
-            }
-
-            RegistryEntry.Reference<EntityAttribute> airAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.MoreRPGLibrary.AIR);
-            if (airAttr != null) {
-                air = shooter.getAttributeValue(airAttr);
             }
 
             float rangedPart = rangedBaseline > 0.0F ? (float)(ranged / rangedBaseline) : 1.0F;

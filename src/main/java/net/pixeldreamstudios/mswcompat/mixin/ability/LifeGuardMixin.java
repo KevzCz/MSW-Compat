@@ -1,15 +1,13 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Hand;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.userdamaged.LifeGuard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -46,11 +44,8 @@ public abstract class LifeGuardMixin {
             float arcaneWeight = ConfigHelper.getFloatValue("excalibur.arcane_weight", 0.5F);
             float soulWeight = ConfigHelper.getFloatValue("excalibur.soul_weight", 0.5F);
 
-            RegistryEntry.Reference<EntityAttribute> arcRef = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
-            RegistryEntry.Reference<EntityAttribute> soulRef = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.SOUL);
-
-            double arc = arcRef != null ? user.getAttributeValue(arcRef) : 0.0;
-            double soul = soulRef != null ? user.getAttributeValue(soulRef) : 0.0;
+            double arc = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.ARCANE);
+            double soul = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.SOUL);
 
             float arcPart = arcaneBaseline > 0.0F ? (float)(arc / arcaneBaseline) : 0.0F;
             float soulPart = soulBaseline > 0.0F ?  (float)(soul / soulBaseline) : 0.0F;

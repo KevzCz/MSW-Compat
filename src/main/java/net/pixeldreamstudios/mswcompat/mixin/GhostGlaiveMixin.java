@@ -2,12 +2,10 @@ package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.entity.projectile.noclip.DamagingNoClipEntity;
 import net.soulsweaponry.entity.projectile.noclip.GhostGlaiveEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,15 +31,10 @@ public abstract class GhostGlaiveMixin {
         float arcaneWeight = ConfigHelper.getFloatValue("ghost_glaive.arcane_weight", 0.5F);
 
         float ad = (float) living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-        float arcane = 0.0F;
-
-        RegistryEntry.Reference<EntityAttribute> arcaneRef = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
-        if (arcaneRef != null) {
-            arcane = (float) living.getAttributeValue(arcaneRef);
-        }
+        double arcane = SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.SpellPower.ARCANE);
 
         float adPart = adBaseline > 0.0F ? ad / adBaseline : 1.0F;
-        float arcanePart = arcaneBaseline > 0.0F ? arcane / arcaneBaseline : 0.0F;
+        float arcanePart = arcaneBaseline > 0.0F ? (float)(arcane / arcaneBaseline) : 0.0F;
 
         float factor = adWeight * adPart + arcaneWeight * arcanePart;
         return Math.max(0.0F, factor);

@@ -2,14 +2,13 @@ package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.entity.projectile.LeviathanAxeEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -37,11 +36,7 @@ public abstract class LeviathanAxeEntityMixin {
         Entity owner = self.getOwner();
         if (owner instanceof LivingEntity living) {
             ad = (float) living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-
-            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
-            if (entry != null) {
-                frost = (float) living.getAttributeValue(entry);
-            }
+            frost = (float) SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.SpellPower.FROST);
         }
 
         float adPart = adBaseline > 0.0F ? ad / adBaseline : 1.0F;
@@ -68,11 +63,9 @@ public abstract class LeviathanAxeEntityMixin {
 
         int bonus = 0;
         if (owner instanceof LivingEntity living) {
-            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
-            if (entry != null) {
-                float frostPerAmp = ConfigHelper.getBaselineValue("leviathan_axe.frost_per_amplifier", 10.0F);
-                bonus = (int)Math.floor(living.getAttributeValue(entry) / frostPerAmp);
-            }
+            float frostPerAmp = ConfigHelper.getBaselineValue("leviathan_axe.frost_per_amplifier", 10.0F);
+            double frost = SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.SpellPower.FROST);
+            bonus = (int)Math.floor(frost / frostPerAmp);
         }
 
         RegistryEntry<StatusEffect> type = original.getEffectType();

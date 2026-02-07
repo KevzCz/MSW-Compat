@@ -1,14 +1,12 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.usagetick.DragonMist;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -42,10 +40,7 @@ public abstract class DragonMistMixin {
 
         float arcane = 0.0F;
         if (user != null) {
-            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
-            if (entry != null) {
-                arcane = (float) user.getAttributeValue(entry);
-            }
+            arcane = (float) SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.ARCANE);
         }
 
         float arcaneBaseline = ConfigHelper.getBaselineValue("dragon_staff.arcane_baseline", 20.0F);

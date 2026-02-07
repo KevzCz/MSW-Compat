@@ -1,13 +1,11 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.posthit.ChainLightningAbility;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -40,12 +38,7 @@ public abstract class ChainLightningAbilityMixin {
         float factor = 1.0F;
         if (attacker != null) {
             float lightningBaseline = ConfigHelper.getBaselineValue("dragonbane.lightning_baseline", 20.0F);
-
-            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.LIGHTNING);
-            if (entry != null && lightningBaseline > 0.0F) {
-                double power = attacker.getAttributeValue(entry);
-                factor = 1.0F + (float)(power / lightningBaseline);
-            }
+            factor = SpellPowerHelper.getScalingFactor(attacker, MSWCompatIdentifiers.SpellPower.LIGHTNING, lightningBaseline);
         }
         mswcompat$scale.set(factor);
     }

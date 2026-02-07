@@ -1,15 +1,13 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.entity.projectile.MoonlightProjectile;
 import net.soulsweaponry.items.abilities.stoppedusing.ShootMoonlight;
 import org.spongepowered.asm.mixin.Mixin;
@@ -59,12 +57,7 @@ public abstract class ShootMoonlightMixin {
                 float frostWeight = ConfigHelper.getFloatValue("dark_moon_greatsword.frost_weight", 0.5F);
 
                 double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                double frost = 0.0;
-
-                RegistryEntry.Reference<EntityAttribute> frostEntry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
-                if (frostEntry != null) {
-                    frost = user.getAttributeValue(frostEntry);
-                }
+                double frost = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.FROST);
 
                 float adPart = adBaseline > 0.0F ? (float)(ad / adBaseline) : 1.0F;
                 float frostPart = frostBaseline > 0.0F ? (float)(frost / frostBaseline) : 0.0F;

@@ -2,16 +2,14 @@ package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,12 +27,9 @@ public abstract class LightningDamageScalingMixin {
         float add = 0.0F;
         ServerPlayerEntity sp = lightning.getChanneler();
         if (sp != null) {
-            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.LIGHTNING);
-            if (entry != null) {
-                double power = sp.getAttributeValue(entry);
-                double damagePerPower = ConfigHelper.getDoubleValue("lightning.damage_per_spell_power", 0.5);
-                add = (float) (power * damagePerPower);
-            }
+            double power = SpellPowerHelper.getEffectiveSpellPower(sp, MSWCompatIdentifiers.SpellPower.LIGHTNING);
+            double damagePerPower = ConfigHelper.getDoubleValue("lightning.damage_per_spell_power", 0.5);
+            add = (float) (power * damagePerPower);
         }
         mswcompat$add.set(add);
     }

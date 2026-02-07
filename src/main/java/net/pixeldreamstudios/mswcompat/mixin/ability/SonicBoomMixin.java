@@ -9,6 +9,7 @@ import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.stoppedusing.SonicBoom;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -48,8 +49,8 @@ public abstract class SonicBoomMixin {
             RegistryEntry.Reference<EntityAttribute> arcRef = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
             RegistryEntry.Reference<EntityAttribute> soulRef = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.SOUL);
 
-            double arc = arcRef != null ? user.getAttributeValue(arcRef) : 0.0;
-            double soul = soulRef != null ? user.getAttributeValue(soulRef) : 0.0;
+            double arc = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.ARCANE);
+            double soul = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.SOUL);
 
             float arcPart = arcaneBaseline > 0.0F ? (float)(arc / arcaneBaseline) : 0.0F;
             float soulPart = soulBaseline > 0.0F ? (float)(soul / soulBaseline) : 0.0F;

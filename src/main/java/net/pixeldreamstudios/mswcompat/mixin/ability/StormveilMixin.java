@@ -1,16 +1,14 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.use.Stormveil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -44,10 +42,9 @@ public abstract class StormveilMixin {
         if (user != null) {
             float ampPer = ConfigHelper.getBaselineValue("tonitrus.amplifier_per_lightning", 20.0F);
 
-            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.LIGHTNING);
-            if (entry != null && ampPer > 0.0F) {
-                double power = user.getAttributeValue(entry);
-                bonus = (int)(power / ampPer); // Cast to int here
+            if (ampPer > 0.0F) {
+                double power = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.LIGHTNING);
+                bonus = (int)(power / ampPer);
             }
         }
 

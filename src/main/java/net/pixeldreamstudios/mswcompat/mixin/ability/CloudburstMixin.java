@@ -10,6 +10,7 @@ import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.abilitykeybind.Cloudburst;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -48,21 +49,16 @@ public abstract class CloudburstMixin {
             float airWeight = ConfigHelper.getFloatValue("galeforce.air_weight", 0.3F);
 
             double ranged = 0.0;
-            double air = 0.0;
+            double air = SpellPowerHelper.getEffectiveSpellPower(player, MSWCompatIdentifiers.MoreRPGLibrary.AIR);
 
             RegistryEntry.Reference<EntityAttribute> rangedAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.RangedWeapon.DAMAGE);
             if (rangedAttr != null) {
                 ranged = player.getAttributeValue(rangedAttr);
             }
 
-            RegistryEntry.Reference<EntityAttribute> airAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.MoreRPGLibrary.AIR);
-            if (airAttr != null) {
-                air = player.getAttributeValue(airAttr);
-            }
-
             float rangedPart = rangedBaseline > 0.0F ?  (float)(ranged / rangedBaseline) : 1.0F;
             float airPart = airBaseline > 0.0F ? (float)(air / airBaseline) : 0.0F;
-
+            
             factor = 1.0F + rangedWeight * (rangedPart - 1.0F) + airWeight * airPart;
         }
 

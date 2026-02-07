@@ -1,14 +1,12 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.posthit.DawnbreakerExplosion;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -41,10 +39,8 @@ public abstract class DawnbreakerExplosionMixin {
         float fireBaseline = ConfigHelper.getBaselineValue("dawnbreaker.fire_baseline", 20.0F);
         float factor = 1.0F;
 
-        if (attacker != null && fireBaseline > 0.0F) {
-            RegistryEntry.Reference<EntityAttribute> ref = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FIRE);
-            double fire = (ref != null) ? attacker.getAttributeValue(ref) : 0.0;
-            factor = 1.0F + (float)(fire / fireBaseline);
+        if (attacker != null) {
+            factor = SpellPowerHelper.getScalingFactor(attacker, MSWCompatIdentifiers.SpellPower.FIRE, fireBaseline);
         }
 
         mswcompat$eventFactor.set(factor);

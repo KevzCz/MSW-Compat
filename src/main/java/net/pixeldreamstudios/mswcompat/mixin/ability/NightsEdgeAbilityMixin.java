@@ -1,16 +1,14 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.abilitykeybind.NightsEdgeAbility;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -50,12 +48,7 @@ public abstract class NightsEdgeAbilityMixin {
             float arcaneWeight = ConfigHelper.getFloatValue("nights_edge.arcane_weight", 0.5F);
 
             double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            double arcane = 0.0;
-
-            RegistryEntry.Reference<EntityAttribute> arcaneEntry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
-            if (arcaneEntry != null) {
-                arcane = user.getAttributeValue(arcaneEntry);
-            }
+            double arcane = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.ARCANE);
 
             float adPart = adBaseline > 0.0F ? (float)(ad / adBaseline) : 1.0F;
             float arcanePart = arcaneBaseline > 0.0F ? (float)(arcane / arcaneBaseline) : 0.0F;

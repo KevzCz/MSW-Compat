@@ -1,14 +1,12 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.statboost.RainBoostsStats;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -48,18 +46,8 @@ public abstract class RainBoostsStatsMixin {
         float lightningWeight = ConfigHelper.getFloatValue(configPrefix + ".rain_lightning_weight", 0.5F);
         float waterWeight = ConfigHelper.getFloatValue(configPrefix + ".rain_water_weight", 0.5F);
 
-        double lightning = 0.0;
-        double water = 0.0;
-
-        RegistryEntry.Reference<EntityAttribute> lightningAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.LIGHTNING);
-        if (lightningAttr != null) {
-            lightning = living.getAttributeValue(lightningAttr);
-        }
-
-        RegistryEntry.Reference<EntityAttribute> waterAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.MoreRPGLibrary.WATER);
-        if (waterAttr != null) {
-            water = living.getAttributeValue(waterAttr);
-        }
+        double lightning = SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.SpellPower.LIGHTNING);
+        double water = SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.MoreRPGLibrary.WATER);
 
         float lightningPart = lightningBaseline > 0.0F ? (float)(lightning / lightningBaseline) : 0.0F;
         float waterPart = waterBaseline > 0.0F ? (float)(water / waterBaseline) : 0.0F;

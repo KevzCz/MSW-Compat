@@ -10,6 +10,7 @@ import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.abilitykeybind.ArrowStorm;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -52,16 +53,11 @@ public abstract class ArrowStormMixin {
             float arcaneWeight = ConfigHelper.getFloatValue("darkmoon_longbow.arcane_weight", 0.5F);
 
             double ranged = 0.0;
-            double arcane = 0.0;
+            double arcane = SpellPowerHelper.getEffectiveSpellPower(player, MSWCompatIdentifiers.SpellPower.ARCANE);
 
             RegistryEntry.Reference<EntityAttribute> rangedAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.RangedWeapon.DAMAGE);
             if (rangedAttr != null) {
                 ranged = player.getAttributeValue(rangedAttr);
-            }
-
-            RegistryEntry.Reference<EntityAttribute> arcaneAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
-            if (arcaneAttr != null) {
-                arcane = player.getAttributeValue(arcaneAttr);
             }
 
             float rangedPart = rangedBaseline > 0.0F ? (float)(ranged / rangedBaseline) : 1.0F;

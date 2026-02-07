@@ -2,15 +2,13 @@ package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.posthit.StormveilSurge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -46,12 +44,7 @@ public abstract class StormveilSurgeMixin {
         float scale = 1.0F;
         if (attacker != null) {
             float lightningBaseline = ConfigHelper.getBaselineValue("tonitrus.lightning_baseline", 40.0F);
-
-            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.LIGHTNING);
-            if (entry != null && lightningBaseline > 0.0F) {
-                double power = attacker.getAttributeValue(entry);
-                scale = 1.0F + (float)(power / lightningBaseline);
-            }
+            scale = SpellPowerHelper.getScalingFactor(attacker, MSWCompatIdentifiers.SpellPower.LIGHTNING, lightningBaseline);
 
             if (attacker instanceof ServerPlayerEntity sp) {
                 mswcompat$channeler.set(sp);

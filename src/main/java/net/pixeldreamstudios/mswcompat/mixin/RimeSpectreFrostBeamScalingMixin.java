@@ -2,12 +2,10 @@ package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,17 +24,11 @@ public abstract class RimeSpectreFrostBeamScalingMixin {
         float soulWeight = ConfigHelper.getFloatValue("rime_spectre.soul_weight", 0.25F);
         float frostWeight = ConfigHelper.getFloatValue("rime_spectre.frost_weight", 0.75F);
 
-        float soul = 0.0F;
-        float frost = 0.0F;
+        double soul = SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.SpellPower.SOUL);
+        double frost = SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.SpellPower.FROST);
 
-        RegistryEntry.Reference<EntityAttribute> soulEntry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.SOUL);
-        if (soulEntry != null) soul = (float) living.getAttributeValue(soulEntry);
-
-        RegistryEntry.Reference<EntityAttribute> frostEntry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
-        if (frostEntry != null) frost = (float) living.getAttributeValue(frostEntry);
-
-        float soulPart = soulBaseline > 0.0F ? soul / soulBaseline : 0.0F;
-        float frostPart = frostBaseline > 0.0F ? frost / frostBaseline : 0.0F;
+        float soulPart = soulBaseline > 0.0F ? (float)(soul / soulBaseline) : 0.0F;
+        float frostPart = frostBaseline > 0.0F ? (float)(frost / frostBaseline) : 0.0F;
         float weighted = soulWeight * soulPart + frostWeight * frostPart;
 
         return 1.0F + weighted;

@@ -1,15 +1,13 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.abilitykeybind.LightningCall;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -51,18 +49,8 @@ public abstract class LightningCallMixin {
             float lightningWeight = ConfigHelper.getFloatValue("dragonslayer_swordspear.lightning_weight", 0.5F);
             float waterWeight = ConfigHelper.getFloatValue("dragonslayer_swordspear.water_weight", 0.5F);
 
-            double lightning = 0.0;
-            double water = 0.0;
-
-            RegistryEntry.Reference<EntityAttribute> lightningAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.LIGHTNING);
-            if (lightningAttr != null) {
-                lightning = player.getAttributeValue(lightningAttr);
-            }
-
-            RegistryEntry.Reference<EntityAttribute> waterAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.MoreRPGLibrary.WATER);
-            if (waterAttr != null) {
-                water = player.getAttributeValue(waterAttr);
-            }
+            double lightning = SpellPowerHelper.getEffectiveSpellPower(player, MSWCompatIdentifiers.SpellPower.LIGHTNING);
+            double water = SpellPowerHelper.getEffectiveSpellPower(player, MSWCompatIdentifiers.MoreRPGLibrary.WATER);
 
             float lightningPart = lightningBaseline > 0.0F ? (float)(lightning / lightningBaseline) : 0.0F;
             float waterPart = waterBaseline > 0.0F ? (float)(water / waterBaseline) : 0.0F;

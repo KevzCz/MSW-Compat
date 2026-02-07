@@ -1,12 +1,10 @@
 package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.entity.mobs.Soulmass;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -22,13 +20,7 @@ public abstract class SoulmassMixin {
         if (!(attacker instanceof Soulmass sm)) return 1.0F;
 
         float soulBaseline = ConfigHelper.getBaselineValue("soulmass.soul_baseline", 20.0F);
-
-        RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.SOUL);
-
-        if (entry == null || soulBaseline <= 0.0F) return 1.0F;
-
-        double soul = sm.getAttributeValue(entry);
-        return 1.0F + (float)(soul / soulBaseline);
+        return SpellPowerHelper.getScalingFactor(sm, MSWCompatIdentifiers.SpellPower.SOUL, soulBaseline);
     }
 
     @Redirect(

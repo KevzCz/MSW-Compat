@@ -2,11 +2,9 @@ package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.entity.projectile.noclip.DamagingWarmupEntity;
 import net.soulsweaponry.entity.projectile.noclip.FlamePillar;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,12 +36,11 @@ public abstract class DamagingWarmupEntityDamageScaleMixin {
                 ? ConfigHelper.getBaselineValue("supernova.flame_pillar_scaling", 0.75F)
                 : ConfigHelper.getBaselineValue("supernova.molten_metal_scaling", 0.25F);
 
-        RegistryEntry.Reference<EntityAttribute> fireRef = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FIRE);
-        double fire = (fireRef != null) ? living.getAttributeValue(fireRef) : 0.0;
+        double fire = SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.SpellPower.FIRE);
 
         float firePart = fireBaseline > 0.0F ? (float)(fire / fireBaseline) : 0.0F;
         float s = 1.0F + scaling * firePart;
-        return s < 0.0F ? 0.0F : s;
+        return Math.max(s, 0.0F);
     }
 
     @ModifyArg(

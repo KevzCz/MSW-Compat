@@ -1,14 +1,12 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.posthit.Permafrost;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -50,10 +48,9 @@ public abstract class PermafrostMixin {
             }
 
             float frostPerAmplifier = ConfigHelper.getBaselineValue(configKey, 10.0F);
-            RegistryEntry.Reference<EntityAttribute> entry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
 
-            if (entry != null && frostPerAmplifier > 0.0F) {
-                double frost = attacker.getAttributeValue(entry);
+            if (frostPerAmplifier > 0.0F) {
+                double frost = SpellPowerHelper.getEffectiveSpellPower(attacker, MSWCompatIdentifiers.SpellPower.FROST);
                 bonus = (int)Math.floor(frost / frostPerAmplifier);
             }
         }
