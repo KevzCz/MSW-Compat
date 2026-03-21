@@ -1,6 +1,7 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
@@ -33,7 +34,7 @@ public abstract class RainBoostsStatsMixin {
 
         mswcompat$shouldScale.set(shouldScale);
 
-        if (!shouldScale || world.isClient || ! world.isRaining() || !(entity instanceof net.minecraft.entity.LivingEntity living)) {
+        if (!shouldScale || world.isClient || ! world.isRaining() || !(entity instanceof LivingEntity living)) {
             mswcompat$damageBoost.set(0.0F);
             mswcompat$speedBoost.set(0.0F);
             return;

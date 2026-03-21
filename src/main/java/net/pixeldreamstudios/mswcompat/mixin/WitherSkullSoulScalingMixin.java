@@ -22,7 +22,7 @@ public abstract class WitherSkullSoulScalingMixin {
         if (!(attacker instanceof PlayerEntity player)) return 1.0F;
 
         float baseline = ConfigHelper.getBaselineValue("wither_skull.soul_baseline", 20.0F);
-        return SpellPowerHelper.getScalingFactor((LivingEntity) player, MSWCompatIdentifiers.SpellPower.SOUL, baseline);
+        return SpellPowerHelper.getScalingFactor(player, MSWCompatIdentifiers.SpellPower.SOUL, baseline);
     }
 
     @Redirect(

@@ -1,9 +1,11 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.soulsweaponry.items.abilities.posthit.BladeDance;
@@ -31,7 +33,7 @@ public abstract class BladeDanceMixin {
             ),
             require = 0
     )
-    private double mswcompat$cacheScaleOnAttributeGet(net.minecraft.entity.attribute.AttributeContainer instance, net.minecraft.registry.entry.RegistryEntry registryEntry, ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    private double mswcompat$cacheScaleOnAttributeGet(AttributeContainer instance, RegistryEntry registryEntry, ItemStack stack, LivingEntity target, LivingEntity attacker) {
         double originalValue = instance.getValue(registryEntry);
 
         boolean shouldScale = ItemMatcher.isGlaiveOfHodir(stack);

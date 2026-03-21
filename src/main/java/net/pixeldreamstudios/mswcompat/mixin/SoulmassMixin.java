@@ -1,6 +1,7 @@
 package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
@@ -29,7 +30,7 @@ public abstract class SoulmassMixin {
                     target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"),
             remap = true
     )
-    private boolean mswcompat$scaleBeam(net.minecraft.entity.LivingEntity target, DamageSource source, float amount) {
+    private boolean mswcompat$scaleBeam(LivingEntity target, DamageSource source, float amount) {
         return target.damage(source, amount * mswcompat$factorFromSource(source));
     }
 }

@@ -2,7 +2,10 @@ package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
@@ -87,7 +90,7 @@ public abstract class NightsEdgeAbilityMixin {
             at = @At("HEAD"),
             require = 0
     )
-    private void mswcompat$captureStackKeybind(net.minecraft.server.world.ServerWorld world, ItemStack stack, net.minecraft.entity.player.PlayerEntity player, net.minecraft.util.Hand hand, CallbackInfo ci) {
+    private void mswcompat$captureStackKeybind(ServerWorld world, ItemStack stack, PlayerEntity player, Hand hand, CallbackInfo ci) {
         mswcompat$currentStack.set(stack);
     }
 
@@ -96,7 +99,7 @@ public abstract class NightsEdgeAbilityMixin {
             at = @At("TAIL"),
             require = 0
     )
-    private void mswcompat$clearStackKeybind(net.minecraft.server.world.ServerWorld world, ItemStack stack, net.minecraft.entity.player.PlayerEntity player, net.minecraft.util.Hand hand, CallbackInfo ci) {
+    private void mswcompat$clearStackKeybind(ServerWorld world, ItemStack stack, PlayerEntity player, Hand hand, CallbackInfo ci) {
         mswcompat$currentStack.remove();
     }
 

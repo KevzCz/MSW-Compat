@@ -17,7 +17,7 @@ public class SpellPowerHelper {
         double schoolPower = (schoolAttr != null) ? entity.getAttributeValue(schoolAttr) : 0.0;
         double genericPower = (genericAttr != null) ? entity.getAttributeValue(genericAttr) : 1.0;
 
-        double genericMultiplier = genericPower / 1.0;
+        double genericMultiplier = genericPower;
 
         return schoolPower * genericMultiplier;
     }

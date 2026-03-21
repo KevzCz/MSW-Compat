@@ -1,6 +1,7 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -80,7 +81,7 @@ public abstract class StormveilSurgeMixin {
             require = 0
     )
     private boolean mswcompat$spawnWithChanneler(World world, Entity entity) {
-        if (mswcompat$shouldScale.get() && entity instanceof net.minecraft.entity.LightningEntity lightning) {
+        if (mswcompat$shouldScale.get() && entity instanceof LightningEntity lightning) {
             ServerPlayerEntity sp = mswcompat$channeler.get();
             if (sp != null) {
                 lightning.setChanneler(sp);

@@ -2,6 +2,7 @@ package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,7 +43,7 @@ public abstract class LightningDamageScalingMixin {
             )
     )
     private boolean mswcompat$customLightningDamage(Entity instance,
-                                                    net.minecraft.entity.damage.DamageSource source,
+                                                    DamageSource source,
                                                     float baseAmount,
                                                     ServerWorld world,
                                                     LightningEntity lightning) {

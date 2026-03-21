@@ -7,6 +7,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.hit.EntityHitResult;
 import net.soulsweaponry.entity.projectile.DragonslayerSwordspearEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -28,7 +29,7 @@ public abstract class DragonslayerSwordspearEntityMixin {
             at = @At("HEAD"),
             require = 0
     )
-    private void mswcompat$storeProjectileOwner(net.minecraft.util.hit.EntityHitResult entityHitResult, CallbackInfo ci) {
+    private void mswcompat$storeProjectileOwner(EntityHitResult entityHitResult, CallbackInfo ci) {
         DragonslayerSwordspearEntity self = (DragonslayerSwordspearEntity) (Object) this;
         mswcompat$projectileOwner.set(self.getOwner());
     }
@@ -38,7 +39,7 @@ public abstract class DragonslayerSwordspearEntityMixin {
             at = @At("TAIL"),
             require = 0
     )
-    private void mswcompat$clearProjectileOwner(net.minecraft.util.hit.EntityHitResult entityHitResult, CallbackInfo ci) {
+    private void mswcompat$clearProjectileOwner(EntityHitResult entityHitResult, CallbackInfo ci) {
         mswcompat$projectileOwner.remove();
     }
 

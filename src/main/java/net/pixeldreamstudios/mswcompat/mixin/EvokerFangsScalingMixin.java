@@ -1,6 +1,7 @@
 package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
@@ -36,7 +37,7 @@ public abstract class EvokerFangsScalingMixin {
             require = 0
     )
     private boolean mswcompat$scaleFangsDamageNoOwner(LivingEntity target,
-                                                      net.minecraft.entity.damage.DamageSource src,
+                                                      DamageSource src,
                                                       float amount) {
         EvokerFangsEntity self = (EvokerFangsEntity)(Object)this;
         return target.damage(src, amount * mswcompat$factorFromOwner(self));
@@ -52,7 +53,7 @@ public abstract class EvokerFangsScalingMixin {
             require = 0
     )
     private boolean mswcompat$scaleFangsDamageWithOwner(LivingEntity target,
-                                                        net.minecraft.entity.damage.DamageSource src,
+                                                        DamageSource src,
                                                         float amount) {
         EvokerFangsEntity self = (EvokerFangsEntity)(Object)this;
         return target.damage(src, amount * mswcompat$factorFromOwner(self));

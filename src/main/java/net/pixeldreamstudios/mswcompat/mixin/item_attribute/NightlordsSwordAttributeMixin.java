@@ -5,8 +5,10 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.items.sword.NightlordsSword;
@@ -24,7 +26,7 @@ import java.util.function.BiConsumer;
 public abstract class NightlordsSwordAttributeMixin {
 
     @Shadow
-    public abstract net.minecraft.item.Item getItem();
+    public abstract Item getItem();
 
     @Unique
     private void mswcompat$applyPotencyAttributes(BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> consumer) {
@@ -41,7 +43,7 @@ public abstract class NightlordsSwordAttributeMixin {
 
         double bonus = 0.0;
         RegistryEntry.Reference<EntityAttribute> attr = null;
-        net.minecraft.util.Identifier modifierId = null;
+        Identifier modifierId = null;
         EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.ADD_VALUE;
 
         switch (effectId) {

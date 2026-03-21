@@ -4,6 +4,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
@@ -47,7 +48,7 @@ public abstract class MjolnirProjectileDamageMixin {
                     target = "Lnet/minecraft/enchantment/EnchantmentHelper;getDamage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;F)F"
             )
     )
-    private float mswcompat$scaleBaseForEnchant(ServerWorld serverWorld, ItemStack stack, Entity target, net.minecraft.entity.damage.DamageSource src, float base) {
+    private float mswcompat$scaleBaseForEnchant(ServerWorld serverWorld, ItemStack stack, Entity target, DamageSource src, float base) {
         mswcompat$didScale.set(true);
         return EnchantmentHelper.getDamage(serverWorld, stack, target, src, base * mswcompat$factor.get());
     }
