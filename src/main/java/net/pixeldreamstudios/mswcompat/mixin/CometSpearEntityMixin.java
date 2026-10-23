@@ -5,6 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.util.hit.EntityHitResult;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.soulsweaponry.entity.projectile.CometSpearEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -21,8 +22,7 @@ public abstract class CometSpearEntityMixin {
 
     @Inject(
             method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
-            at = @At("HEAD"),
-            require = 0
+            at = @At("HEAD")
     )
     private void mswcompat$cacheScale(EntityHitResult entityHitResult, CallbackInfo ci) {
         CometSpearEntity self = (CometSpearEntity)(Object)this;
@@ -30,9 +30,9 @@ public abstract class CometSpearEntityMixin {
         Entity owner = self.getOwner();
         float baseline = ConfigHelper.getBaselineValue("comet_spear.attack_damage_baseline", 8.0F);
 
-        if (owner instanceof LivingEntity living && baseline > 0.0F) {
-            double ad = living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) factor = (float)(ad / baseline);
+        if (owner instanceof LivingEntity living) {
+            factor = DamageScalingHelper.attackDamageOnly(
+                    living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE), baseline);
         }
 
         mswcompat$scale.set(factor);
@@ -41,8 +41,7 @@ public abstract class CometSpearEntityMixin {
     @ModifyVariable(
             method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
             at = @At(value = "STORE"),
-            ordinal = 0,
-            require = 0
+            ordinal = 0
     )
     private float mswcompat$scaleBaseDamage(float f) {
         return f * mswcompat$scale.get();
@@ -50,8 +49,7 @@ public abstract class CometSpearEntityMixin {
 
     @Inject(
             method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
-            at = @At("TAIL"),
-            require = 0
+            at = @At("TAIL")
     )
     private void mswcompat$clearScale(EntityHitResult entityHitResult, CallbackInfo ci) {
         mswcompat$scale.remove();

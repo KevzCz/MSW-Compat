@@ -1,4 +1,5 @@
 plugins {
+    id "me.modmuss50.mod-publish-plugin" version "2.1.1"
 	id 'fabric-loom' version "${loom_version}"
 	id 'maven-publish'
 }
@@ -50,7 +51,8 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation "curse.maven:mariums-soulslike-weaponry-632066:7421856"
-
+	modImplementation "curse.maven:spell-power-771265:7303956"
+	modImplementation "curse.maven:spell-engine-807653:8473032"
 	modImplementation("software.bernie.geckolib:geckolib-fabric-${geckolib_version}")
 
 	modImplementation "curse.maven:attributefix-${project.attributefix}"
@@ -110,4 +112,55 @@ publishing {
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
 	}
+}
+
+publishMods {
+    dryRun = gradle.startParameter.taskNames.any { it.contains("publishModsDry") }
+
+    file = tasks.remapJar.archiveFile
+    displayName = "MSW Compat [FABRIC] [${rootProject.minecraft_version}] - [${project.version}]"
+    type = STABLE
+    modLoaders.add("fabric")
+
+    def changelogFile = rootProject.file("CHANGELOG.md")
+    def changelogText = changelogFile.exists() ? changelogFile.text : ""
+    changelog = changelogText.trim().isEmpty() ? "No changelog provided." : changelogText
+
+    curseforge {
+        projectId = "1377710"
+        projectSlug = "msw-compat"
+        accessToken = providers.gradleProperty("cfToken")
+            .orElse(providers.environmentVariable("CF_TOKEN"))
+        minecraftVersions.add("1.21.1")
+        javaVersions.add(JavaVersion.VERSION_21)
+        clientRequired = true
+        serverRequired = true
+    }
+
+    modrinth {
+        projectId = "pDTF87Tk"
+        accessToken = providers.gradleProperty("modrinthToken")
+            .orElse(providers.environmentVariable("MODRINTH_TOKEN"))
+        minecraftVersions.add("1.21.1")
+        environment = CLIENT_AND_SERVER
+    }
+}
+
+tasks.register("publishModsDry", Copy) {
+    group = "upload"
+    description = "Dry run of publishMods - writes to build/unified-dry/ instead of uploading."
+
+    def publishTasks = tasks.withType(me.modmuss50.mpp.PublishModTask)
+    dependsOn publishTasks
+
+    from(publishTasks.collect { it.dryRunDirectory }) {
+        include "**/*.jar"
+    }
+    into rootProject.layout.buildDirectory.dir("unified-dry")
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.named("publishMods") { group = "upload" }
+tasks.withType(me.modmuss50.mpp.PublishModTask).configureEach {
+    group = "upload"
 }

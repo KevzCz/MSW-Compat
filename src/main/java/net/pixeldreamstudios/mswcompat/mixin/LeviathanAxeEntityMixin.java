@@ -2,12 +2,14 @@ package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.minecraft.entity.damage.DamageSource;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.MswCompatDebug;
+import net.pixeldreamstudios.mswcompat.util.ProjectileScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.entity.projectile.LeviathanAxeEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,24 +27,12 @@ public abstract class LeviathanAxeEntityMixin {
 
     @Inject(method = "getDamage", at = @At("HEAD"))
     private void mswcompat$cacheFactor(Entity target, CallbackInfoReturnable<Float> cir) {
-        float ad = 0F, frost = 0F;
-
-        float adBaseline = ConfigHelper.getBaselineValue("leviathan_axe.attack_damage_baseline", 10.0F);
-        float frostBaseline = ConfigHelper.getBaselineValue("leviathan_axe.frost_baseline", 20.0F);
-        float adWeight = ConfigHelper.getFloatValue("leviathan_axe.attack_damage_weight", 0.5F);
-        float frostWeight = ConfigHelper.getFloatValue("leviathan_axe.frost_weight", 0.5F);
-
-        LeviathanAxeEntity self = (LeviathanAxeEntity)(Object)this;
+        float factor = 1.0F;
+        LeviathanAxeEntity self = (LeviathanAxeEntity) (Object) this;
         Entity owner = self.getOwner();
         if (owner instanceof LivingEntity living) {
-            ad = (float) living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            frost = (float) SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.SpellPower.FROST);
+            factor = ProjectileScalingHelper.leviathanThrownFactor(living);
         }
-
-        float adPart = adBaseline > 0.0F ? ad / adBaseline : 1.0F;
-        float frostPart = frostBaseline > 0.0F ? frost / frostBaseline : 0.0F;
-        float factor = adWeight * adPart + frostWeight * frostPart;
-        if (factor < 0F) factor = 0F;
         mswcompat$damageFactor.set(factor);
     }
 
@@ -53,9 +43,13 @@ public abstract class LeviathanAxeEntityMixin {
     }
 
     @Redirect(
-            method = "collide",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/entity/LivingEntity;addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;)Z")
+            method = "collide(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;F)Z",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/LivingEntity;addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;)Z",
+                    remap = true
+            ),
+            remap = true
     )
     private boolean mswcompat$addStatusEffectWithFrostBonus(LivingEntity target, StatusEffectInstance original) {
         LeviathanAxeEntity self = (LeviathanAxeEntity)(Object)this;
@@ -72,5 +66,29 @@ public abstract class LeviathanAxeEntityMixin {
         int duration = original.getDuration();
         int amp = Math.max(0, original.getAmplifier() + bonus);
         return target.addStatusEffect(new StatusEffectInstance(type, duration, amp));
+    }
+
+    @Redirect(
+            method = "collide(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;F)Z",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
+                    remap = true
+            ),
+            remap = true
+    )
+    private boolean mswcompat$scaleSplashDamage(Entity target, DamageSource source, float amount) {
+        LeviathanAxeEntity self = (LeviathanAxeEntity) (Object) this;
+        Entity owner = self.getOwner();
+        float factor = 1.0F;
+        if (owner instanceof LivingEntity living) {
+            factor = ProjectileScalingHelper.leviathanThrownFactor(living);
+            MswCompatDebug.chat(
+                    living,
+                    String.format(
+                            "Leviathan collide damage: %.1f -> %.1f (x%.2f)",
+                            amount, amount * factor, factor));
+        }
+        return target.damage(source, amount * factor);
     }
 }

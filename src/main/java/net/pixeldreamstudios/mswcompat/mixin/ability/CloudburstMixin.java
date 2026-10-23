@@ -10,6 +10,7 @@ import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.abilitykeybind.Cloudburst;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +31,7 @@ public abstract class CloudburstMixin {
     @Inject(
             method = "shootArrow(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/math/Vec3d;)V",
             at = @At("HEAD"),
-            require = 0
+            remap = true
     )
     private void mswcompat$cacheScale(ServerWorld world, ItemStack stack, ItemStack arrowStack, PlayerEntity player, @Nullable Vec3d currentTargetPos, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isGaleforce(stack);
@@ -56,10 +57,9 @@ public abstract class CloudburstMixin {
                 ranged = player.getAttributeValue(rangedAttr);
             }
 
-            float rangedPart = rangedBaseline > 0.0F ?  (float)(ranged / rangedBaseline) : 1.0F;
-            float airPart = airBaseline > 0.0F ? (float)(air / airBaseline) : 0.0F;
-            
-            factor = 1.0F + rangedWeight * (rangedPart - 1.0F) + airWeight * airPart;
+            factor = DamageScalingHelper.attackDamageAndSecondary(
+                    ranged, rangedBaseline, rangedWeight,
+                    air, airBaseline, airWeight);
         }
 
         mswcompat$damageScale.set(factor);
@@ -69,7 +69,7 @@ public abstract class CloudburstMixin {
             method = "shootArrow(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/math/Vec3d;)V",
             at = @At(value = "STORE", ordinal = 0),
             ordinal = 0,
-            require = 0
+            remap = true
     )
     private double mswcompat$scaleDamage(double damage) {
         if (!mswcompat$shouldScale.get()) {
@@ -81,7 +81,7 @@ public abstract class CloudburstMixin {
     @Inject(
             method = "shootArrow(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/math/Vec3d;)V",
             at = @At("TAIL"),
-            require = 0
+            remap = true
     )
     private void mswcompat$clearScale(ServerWorld world, ItemStack stack, ItemStack arrowStack, PlayerEntity player, @Nullable Vec3d currentTargetPos, CallbackInfo ci) {
         mswcompat$damageScale.remove();

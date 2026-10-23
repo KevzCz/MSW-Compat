@@ -1,4 +1,4 @@
-package net.pixeldreamstudios.mswcompat.mixin. ability;
+package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.soulsweaponry.items.abilities.abilitykeybind.ExplodeSavedEntities;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +15,7 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
@@ -27,50 +28,88 @@ public abstract class ExplodeSavedEntitiesMixin {
     @Inject(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheScale(ServerWorld world, ItemStack stack, PlayerEntity player, @Nullable Hand hand, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isDraupnirSpear(stack);
         mswcompat$shouldScale.set(shouldScale);
 
         if (! shouldScale) {
             mswcompat$damageScale.set(1.0F);
-            mswcompat$explosionScale. set(1.0F);
+            mswcompat$explosionScale.set(1.0F);
             return;
         }
 
         float factor = 1.0F;
         if (player != null) {
-            float adBaseline = ConfigHelper.getBaselineValue("draupnir_spear. attack_damage_baseline", 8.0F);
-
-            if (adBaseline > 0.0F) {
-                double ad = player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                if (ad > 0.0) factor = (float)(ad / adBaseline);
-            }
+            factor = DamageScalingHelper.attackDamageOnly(
+                    player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
+                    ConfigHelper.getBaselineValue("draupnir_spear.attack_damage_baseline", 8.0F));
         }
 
         mswcompat$damageScale.set(factor);
-        mswcompat$explosionScale.set(factor);
+        float sizeCap = ConfigHelper.getFloatValue("draupnir_spear.explosion_size_max_multiplier", 5.0F);
+        mswcompat$explosionScale.set(Math.min(factor, sizeCap));
     }
 
-    @ModifyVariable(
+    @Inject(
+            method = "explodeSavedEntities(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;)V",
+            at = @At("HEAD"),
+            remap = true
+    )
+    private void mswcompat$cacheExplosionScale(ServerWorld world, ItemStack stack, PlayerEntity player, CallbackInfo ci) {
+        if (!ItemMatcher.isDraupnirSpear(stack)) {
+            return;
+        }
+        mswcompat$shouldScale.set(true);
+        float factor = 1.0F;
+        if (player != null) {
+            factor = DamageScalingHelper.attackDamageOnly(
+                    player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
+                    ConfigHelper.getBaselineValue("draupnir_spear.attack_damage_baseline", 8.0F));
+        }
+        mswcompat$damageScale.set(factor);
+        float sizeCap = ConfigHelper.getFloatValue("draupnir_spear.explosion_size_max_multiplier", 5.0F);
+        mswcompat$explosionScale.set(Math.min(factor, sizeCap));
+    }
+
+    @Inject(
+            method = "explodeSavedEntities(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;)V",
+            at = @At("TAIL"),
+            remap = true
+    )
+    private void mswcompat$clearExplosionScale(ServerWorld world, ItemStack stack, PlayerEntity player, CallbackInfo ci) {
+        mswcompat$damageScale.remove();
+        mswcompat$explosionScale.remove();
+        mswcompat$shouldScale.remove();
+    }
+
+    @ModifyArg(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
-            at = @At(value = "STORE"),
-            ordinal = 1,
-            require = 0
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
+                    remap = true
+            ),
+            index = 1,
+            remap = true
     )
     private float mswcompat$scaleAoEDamage(float damage) {
-        if (! mswcompat$shouldScale.get()) {
+        if (!mswcompat$shouldScale.get()) {
             return damage;
         }
         return damage * mswcompat$damageScale.get();
     }
 
-    @ModifyVariable(
+    @ModifyArg(
             method = "explodeSavedEntities(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;)V",
-            at = @At(value = "STORE"),
-            ordinal = 0,
-            require = 0
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/world/ServerWorld;createExplosion(Lnet/minecraft/entity/Entity;DDDFZLnet/minecraft/world/World$ExplosionSourceType;)Lnet/minecraft/world/explosion/Explosion;",
+                    remap = true
+            ),
+            index = 4,
+            remap = true
     )
     private float mswcompat$scaleExplosionPower(float power) {
         if (!mswcompat$shouldScale.get()) {
@@ -82,8 +121,8 @@ public abstract class ExplodeSavedEntitiesMixin {
     @Inject(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clear(ServerWorld world, ItemStack stack, PlayerEntity player, @Nullable Hand hand, CallbackInfo ci) {
         mswcompat$damageScale.remove();
         mswcompat$explosionScale.remove();

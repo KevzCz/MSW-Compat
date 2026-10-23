@@ -24,13 +24,13 @@ public abstract class ChainLightningAbilityMixin {
     @Inject(
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("HEAD"),
-            require = 0
+            remap = true
     )
     private void mswcompat$cacheScale(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isDragonbane(stack);
         mswcompat$shouldScale.set(shouldScale);
 
-        if (!   shouldScale) {
+        if (!shouldScale) {
             mswcompat$scale.set(1.0F);
             return;
         }
@@ -47,10 +47,10 @@ public abstract class ChainLightningAbilityMixin {
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At(value = "STORE"),
             ordinal = 1,
-            require = 0
+            remap = true
     )
     private float mswcompat$scaleDamage(float damage) {
-        if (!  mswcompat$shouldScale.get()) {
+        if (!mswcompat$shouldScale.get()) {
             return damage;
         }
         return damage * mswcompat$scale.get();
@@ -59,7 +59,7 @@ public abstract class ChainLightningAbilityMixin {
     @Inject(
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("TAIL"),
-            require = 0
+            remap = true
     )
     private void mswcompat$clearScale(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfo ci) {
         mswcompat$scale.remove();

@@ -25,8 +25,8 @@ public abstract class PermafrostMixin {
     @Inject(
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheFrostAmp(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isAnyPermafrost(stack);
         mswcompat$shouldScale.set(shouldScale);
@@ -61,10 +61,11 @@ public abstract class PermafrostMixin {
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/LivingEntity;addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;)Z"
+                    target = "Lnet/minecraft/entity/LivingEntity;addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;)Z",
+                    remap = true
             ),
-            require = 0
-    )
+            remap = true
+)
     private boolean mswcompat$addStatusEffectWithFrostBonus(LivingEntity target, StatusEffectInstance original) {
         if (!mswcompat$shouldScale.get()) {
             return target.addStatusEffect(original);
@@ -79,8 +80,8 @@ public abstract class PermafrostMixin {
     @Inject(
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clearFrostAmp(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfo ci) {
         mswcompat$ampBonus.remove();
         mswcompat$shouldScale.remove();

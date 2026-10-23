@@ -27,8 +27,8 @@ public abstract class RainBoostsStatsMixin {
     @Inject(
             method = "inventoryTick(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$calculateBoost(ItemStack stack, World world, Entity entity, int slot, boolean selected, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isAnyRainBoost(stack);
 
@@ -63,8 +63,8 @@ public abstract class RainBoostsStatsMixin {
             method = "inventoryTick(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V",
             at = @At(value = "STORE"),
             ordinal = 0,
-            require = 0
-    )
+            remap = true
+)
     private float mswcompat$addDamageBoost(float damage) {
         if (!mswcompat$shouldScale.get()) {
             return damage;
@@ -76,8 +76,8 @@ public abstract class RainBoostsStatsMixin {
             method = "inventoryTick(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V",
             at = @At(value = "STORE"),
             ordinal = 1,
-            require = 0
-    )
+            remap = true
+)
     private float mswcompat$addSpeedBoost(float attackSpeed) {
         if (!mswcompat$shouldScale.get()) {
             return attackSpeed;
@@ -88,8 +88,8 @@ public abstract class RainBoostsStatsMixin {
     @Inject(
             method = "inventoryTick(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clear(ItemStack stack, World world, Entity entity, int slot, boolean selected, CallbackInfo ci) {
         mswcompat$damageBoost.remove();
         mswcompat$speedBoost.remove();

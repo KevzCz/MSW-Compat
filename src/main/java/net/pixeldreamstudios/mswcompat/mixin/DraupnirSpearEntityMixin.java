@@ -6,6 +6,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.hit.EntityHitResult;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.soulsweaponry.entity.projectile.DraupnirSpearEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -20,22 +21,19 @@ public abstract class DraupnirSpearEntityMixin {
             method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"
+                    target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
+                    remap = true
             ),
-            require = 0
+            remap = true
     )
     private boolean mswcompat$scaleProjectileDamage(Entity target, DamageSource source, float amount, EntityHitResult hit) {
         DraupnirSpearEntity self = (DraupnirSpearEntity)(Object)this;
         float factor = 1.0F;
-
         Entity owner = self.getOwner();
         if (owner instanceof LivingEntity living) {
-            float adBaseline = ConfigHelper.getBaselineValue("draupnir_spear.attack_damage_baseline", 8.0F);
-
-            if (adBaseline > 0.0F) {
-                double ad = living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                if (ad > 0.0) factor = (float)(ad / adBaseline);
-            }
+            factor = DamageScalingHelper.attackDamageOnly(
+                    living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
+                    ConfigHelper.getBaselineValue("draupnir_spear.attack_damage_baseline", 8.0F));
         }
 
         return target.damage(source, amount * factor);

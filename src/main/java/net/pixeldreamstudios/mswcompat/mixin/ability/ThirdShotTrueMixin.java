@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
@@ -28,8 +28,8 @@ public abstract class ThirdShotTrueMixin {
     @Inject(
             method = "getModifiedProjectile(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/projectile/PersistentProjectileEntity;)Lnet/minecraft/entity/projectile/PersistentProjectileEntity;",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheBonus(World world, ItemStack bowStack, ItemStack arrowStack, LivingEntity shooter, PersistentProjectileEntity originalArrow, CallbackInfoReturnable<PersistentProjectileEntity> cir) {
         boolean shouldScale = ItemMatcher.isAnyKrakenSlayer(bowStack);
         mswcompat$shouldScale.set(shouldScale);
@@ -58,11 +58,15 @@ public abstract class ThirdShotTrueMixin {
         mswcompat$trueDamageBonus.set(bonus);
     }
 
-    @ModifyVariable(
+    @ModifyArg(
             method = "getModifiedProjectile(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/projectile/PersistentProjectileEntity;)Lnet/minecraft/entity/projectile/PersistentProjectileEntity;",
-            at = @At(value = "INVOKE", target = "Lnet/soulsweaponry/entity/projectile/arrow/TrueDamageArrow;setTrueDamage(F)V"),
-            ordinal = 0,
-            require = 0
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/soulsweaponry/entity/projectile/arrow/TrueDamageArrow;setTrueDamage(F)V",
+                    remap = false
+            ),
+            index = 0,
+            remap = true
     )
     private float mswcompat$addTrueDamageBonus(float trueDamage) {
         if (! mswcompat$shouldScale.get()) {
@@ -74,8 +78,8 @@ public abstract class ThirdShotTrueMixin {
     @Inject(
             method = "getModifiedProjectile(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/projectile/PersistentProjectileEntity;)Lnet/minecraft/entity/projectile/PersistentProjectileEntity;",
             at = @At("RETURN"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clearBonus(World world, ItemStack bowStack, ItemStack arrowStack, LivingEntity shooter, PersistentProjectileEntity originalArrow, CallbackInfoReturnable<PersistentProjectileEntity> cir) {
         mswcompat$trueDamageBonus.remove();
         mswcompat$shouldScale.remove();

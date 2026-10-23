@@ -25,8 +25,7 @@ public abstract class FreyrSwordGoalMixin {
             method = "getAttackDamage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/LivingEntity;)F",
             at = @At("RETURN"),
             cancellable = true,
-            remap = false,
-            require = 0
+            remap = true
     )
     private void mswcompat$addEntityAttackAttribute(ServerWorld world, LivingEntity target, CallbackInfoReturnable<Float> cir) {
         if (this.entity == null) {

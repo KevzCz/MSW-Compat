@@ -10,6 +10,7 @@ import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.customarrows.GaleArrows;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,8 +29,8 @@ public abstract class GaleArrowsMixin {
     @Inject(
             method = "getModifiedProjectile(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/projectile/PersistentProjectileEntity;)Lnet/minecraft/entity/projectile/PersistentProjectileEntity;",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheScale(World world, ItemStack bowStack, ItemStack arrowStack, LivingEntity shooter, PersistentProjectileEntity originalArrow, CallbackInfoReturnable<PersistentProjectileEntity> cir) {
         boolean shouldScale = ItemMatcher.isGaleforce(bowStack);
         mswcompat$shouldScale.set(shouldScale);
@@ -54,10 +55,9 @@ public abstract class GaleArrowsMixin {
                 ranged = shooter.getAttributeValue(rangedAttr);
             }
 
-            float rangedPart = rangedBaseline > 0.0F ? (float)(ranged / rangedBaseline) : 1.0F;
-            float airPart = airBaseline > 0.0F ? (float)(air / airBaseline) : 0.0F;
-
-            factor = 1.0F + rangedWeight * (rangedPart - 1.0F) + airWeight * airPart;
+            factor = DamageScalingHelper.attackDamageAndSecondary(
+                    ranged, rangedBaseline, rangedWeight,
+                    air, airBaseline, airWeight);
         }
 
         mswcompat$damageScale.set(factor);
@@ -66,8 +66,8 @@ public abstract class GaleArrowsMixin {
     @Inject(
             method = "getModifiedProjectile(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/projectile/PersistentProjectileEntity;)Lnet/minecraft/entity/projectile/PersistentProjectileEntity;",
             at = @At("RETURN"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$scaleArrowDamage(World world, ItemStack bowStack, ItemStack arrowStack, LivingEntity shooter, PersistentProjectileEntity originalArrow, CallbackInfoReturnable<PersistentProjectileEntity> cir) {
         if (!mswcompat$shouldScale.get()) {
             return;
@@ -83,8 +83,8 @@ public abstract class GaleArrowsMixin {
     @Inject(
             method = "getModifiedProjectile(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/projectile/PersistentProjectileEntity;)Lnet/minecraft/entity/projectile/PersistentProjectileEntity;",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clearScale(World world, ItemStack bowStack, ItemStack arrowStack, LivingEntity shooter, PersistentProjectileEntity originalArrow, CallbackInfoReturnable<PersistentProjectileEntity> cir) {
         mswcompat$damageScale.remove();
         mswcompat$shouldScale.remove();

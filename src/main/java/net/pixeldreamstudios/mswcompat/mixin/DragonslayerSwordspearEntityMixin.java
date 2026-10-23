@@ -27,7 +27,7 @@ public abstract class DragonslayerSwordspearEntityMixin {
     @Inject(
             method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
             at = @At("HEAD"),
-            require = 0
+            remap = true
     )
     private void mswcompat$storeProjectileOwner(EntityHitResult entityHitResult, CallbackInfo ci) {
         DragonslayerSwordspearEntity self = (DragonslayerSwordspearEntity) (Object) this;
@@ -37,7 +37,7 @@ public abstract class DragonslayerSwordspearEntityMixin {
     @Inject(
             method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
             at = @At("TAIL"),
-            require = 0
+            remap = true
     )
     private void mswcompat$clearProjectileOwner(EntityHitResult entityHitResult, CallbackInfo ci) {
         mswcompat$projectileOwner.remove();
@@ -50,7 +50,7 @@ public abstract class DragonslayerSwordspearEntityMixin {
                     target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
                     remap = true
             ),
-            require = 0
+            remap = true
     )
     private boolean mswcompat$damageWithADAndCredit(Entity target, DamageSource source, float amount) {
         Entity owner = mswcompat$projectileOwner.get();
@@ -74,7 +74,7 @@ public abstract class DragonslayerSwordspearEntityMixin {
             method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"),
             index = 0,
-            require = 0
+            remap = true
     )
     private Entity mswcompat$attributeProjectileLightning(Entity e) {
         Entity owner = mswcompat$projectileOwner.get();

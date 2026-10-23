@@ -5,6 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.entity.projectile.noclip.DamagingNoClipEntity;
 import net.soulsweaponry.entity.projectile.noclip.GhostGlaiveEntity;
@@ -25,19 +26,13 @@ public abstract class GhostGlaiveMixin {
         Entity owner = gg.getOwner();
         if (!(owner instanceof LivingEntity living)) return 1.0F;
 
-        float adBaseline = ConfigHelper.getBaselineValue("ghost_glaive.attack_damage_baseline", 10.0F);
-        float arcaneBaseline = ConfigHelper.getBaselineValue("ghost_glaive.arcane_baseline", 20.0F);
-        float adWeight = ConfigHelper.getFloatValue("ghost_glaive.attack_damage_weight", 0.5F);
-        float arcaneWeight = ConfigHelper.getFloatValue("ghost_glaive.arcane_weight", 0.5F);
-
-        float ad = (float) living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-        double arcane = SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.SpellPower.ARCANE);
-
-        float adPart = adBaseline > 0.0F ? ad / adBaseline : 1.0F;
-        float arcanePart = arcaneBaseline > 0.0F ? (float)(arcane / arcaneBaseline) : 0.0F;
-
-        float factor = adWeight * adPart + arcaneWeight * arcanePart;
-        return Math.max(0.0F, factor);
+        return DamageScalingHelper.attackDamageAndSecondary(
+                living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
+                ConfigHelper.getBaselineValue("ghost_glaive.attack_damage_baseline", 10.0F),
+                ConfigHelper.getFloatValue("ghost_glaive.attack_damage_weight", 0.5F),
+                SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.SpellPower.ARCANE),
+                ConfigHelper.getBaselineValue("ghost_glaive.arcane_baseline", 20.0F),
+                ConfigHelper.getFloatValue("ghost_glaive.arcane_weight", 0.5F));
     }
 
     @ModifyArg(
@@ -47,8 +42,7 @@ public abstract class GhostGlaiveMixin {
                     target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
                     remap = true
             ),
-            index = 1,
-            require = 0
+            index = 1
     )
     private float mswcompat$scaleGhostGlaiveDamage(float amount) {
         return amount * mswcompat$computeFactor();

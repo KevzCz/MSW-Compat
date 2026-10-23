@@ -21,14 +21,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Pseudo
 @Mixin( value = Stormveil.class, remap = false )
 public abstract class StormveilMixin {
-    @Unique private static final ThreadLocal<Integer> mswcompat$ampBonus = ThreadLocal.withInitial(() -> 0); // Changed to Integer
+    @Unique private static final ThreadLocal<Integer> mswcompat$ampBonus = ThreadLocal.withInitial(() -> 0);
     @Unique private static final ThreadLocal<Boolean> mswcompat$shouldScale = ThreadLocal.withInitial(() -> false);
 
     @Inject(
             method = "use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/util/TypedActionResult;",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheBonus(World world, PlayerEntity user, Hand hand, ItemStack stack, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         boolean shouldScale = ItemMatcher.isTonitrus(stack);
         mswcompat$shouldScale.set(shouldScale);
@@ -55,8 +55,8 @@ public abstract class StormveilMixin {
             method = "use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/util/TypedActionResult;",
             at = @At(value = "STORE"),
             ordinal = 0,
-            require = 0
-    )
+            remap = true
+)
     private int mswcompat$addAmpBonus(int amp) {
         if (!mswcompat$shouldScale.get()) {
             return amp;
@@ -67,8 +67,8 @@ public abstract class StormveilMixin {
     @Inject(
             method = "use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/util/TypedActionResult;",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clearBonus(World world, PlayerEntity user, Hand hand, ItemStack stack, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         mswcompat$ampBonus.remove();
         mswcompat$shouldScale.remove();

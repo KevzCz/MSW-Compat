@@ -32,7 +32,7 @@ public class MSWCompatIdentifiers {
         private SpellEngine() {}
     }
     public static final class MoreRPGLibrary {
-        public static final Identifier RAGE = Identifier.of("more_rpg_classes", "rage_modifier");
+        public static final Identifier RAGE = Identifier.of("mrpg_lib", "rage_modifier");
         public static final Identifier WATER = Identifier.of("spell_power", "water");
         public static final Identifier AIR = Identifier.of("spell_power", "air");
 

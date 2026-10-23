@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -26,8 +27,8 @@ public abstract class DragonMistMixin {
     @Inject(
             method = "usageTick(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;I)V",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheArcaneScaling(World world, LivingEntity user, ItemStack stack, int remainingUseTicks, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isDragonStaff(stack);
         mswcompat$shouldScale.set(shouldScale);
@@ -55,8 +56,8 @@ public abstract class DragonMistMixin {
             method = "usageTick(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;I)V",
             at = @At(value = "STORE"),
             ordinal = 0,
-            require = 0
-    )
+            remap = true
+)
     private float mswcompat$scaleHealOrDamage(float healOrDamage, World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         if (!mswcompat$shouldScale.get()) {
             return healOrDamage;
@@ -64,11 +65,15 @@ public abstract class DragonMistMixin {
         return healOrDamage * mswcompat$fogDamageScale.get();
     }
 
-    @ModifyVariable(
+    @ModifyArg(
             method = "usageTick(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;I)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;heal(F)V"),
-            ordinal = 0,
-            require = 0
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/LivingEntity;heal(F)V",
+                    remap = true
+            ),
+            index = 0,
+            remap = true
     )
     private float mswcompat$scaleHealing(float healing) {
         if (!mswcompat$shouldScale.get()) {
@@ -80,8 +85,8 @@ public abstract class DragonMistMixin {
     @Inject(
             method = "usageTick(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;I)V",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clearArcaneScaling(World world, LivingEntity user, ItemStack stack, int remainingUseTicks, CallbackInfo ci) {
         mswcompat$fogHealScale.remove();
         mswcompat$fogDamageScale.remove();

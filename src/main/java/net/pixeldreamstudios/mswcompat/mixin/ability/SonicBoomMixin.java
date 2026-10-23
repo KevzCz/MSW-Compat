@@ -9,6 +9,7 @@ import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.stoppedusing.SonicBoom;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,8 +29,8 @@ public abstract class SonicBoomMixin {
     @Inject(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheScale(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isExcalibur(stack);
         mswcompat$shouldScale.set(shouldScale);
@@ -52,20 +53,21 @@ public abstract class SonicBoomMixin {
             double arc = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.ARCANE);
             double soul = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.SOUL);
 
-            float arcPart = arcaneBaseline > 0.0F ? (float)(arc / arcaneBaseline) : 0.0F;
-            float soulPart = soulBaseline > 0.0F ? (float)(soul / soulBaseline) : 0.0F;
-
-            factor = 1.0F + arcaneWeight * arcPart + soulWeight * soulPart;
+            factor = DamageScalingHelper.dualFromZero(arc, arcaneBaseline, arcaneWeight, soul, soulBaseline, soulWeight);
         }
         mswcompat$scale.set(factor);
     }
 
     @ModifyArg(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
+                    remap = true
+            ),
             index = 1,
-            require = 0
-    )
+            remap = true
+)
     private float mswcompat$scaleSonicBoomDamage(float damage) {
         if (! mswcompat$shouldScale.get()) {
             return damage;
@@ -76,8 +78,8 @@ public abstract class SonicBoomMixin {
     @Inject(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clearScale(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
         mswcompat$scale.remove();
         mswcompat$shouldScale.remove();

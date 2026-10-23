@@ -8,6 +8,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.soulsweaponry.items.abilities.stoppedusing.SwordLeap;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -26,8 +27,8 @@ public abstract class SwordLeapMixin {
     @Inject(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheAbilityScale(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isDarkinBlade(stack);
         mswcompat$shouldScale.set(shouldScale);
@@ -39,21 +40,18 @@ public abstract class SwordLeapMixin {
 
         float factor = 1.0F;
         if (user != null) {
-            float adBaseline = ConfigHelper.getBaselineValue("darkin_blade.attack_damage_baseline", 11.0F);
-
-            if (adBaseline > 0.0F) {
-                double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                if (ad > 0.0) factor = (float)(ad / adBaseline);
-            }
+            factor = DamageScalingHelper.attackDamageOnly(
+                    user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
+                    ConfigHelper.getBaselineValue("darkin_blade.attack_damage_baseline", 11.0F));
         }
         mswcompat$abilityScale.set(factor);
     }
 
     @Redirect(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
-            at = @At(value = "NEW", target = "net/minecraft/entity/effect/StatusEffectInstance", ordinal = 0),
-            require = 0
-    )
+            at = @At(value = "NEW", target = "net/minecraft/entity/effect/StatusEffectInstance", ordinal = 0, remap = true),
+            remap = true
+)
     private StatusEffectInstance mswcompat$scaleCalculatedFallEffect(RegistryEntry effect, int duration, int amplifier) {
         if (! mswcompat$shouldScale.get()) {
             return new StatusEffectInstance(effect, duration, amplifier);
@@ -66,8 +64,8 @@ public abstract class SwordLeapMixin {
     @Inject(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clearAbilityScale(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
         mswcompat$abilityScale.remove();
         mswcompat$shouldScale.remove();

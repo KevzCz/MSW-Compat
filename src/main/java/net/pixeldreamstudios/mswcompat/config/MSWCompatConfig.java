@@ -64,11 +64,70 @@ public class MSWCompatConfig {
     public KrakenSlayerCrossbowConfig kraken_slayer_crossbow = new KrakenSlayerCrossbowConfig();
     public BloodLossConfig blood_loss = new BloodLossConfig();
     public NightlordsSwordConfig nightlords_sword = new NightlordsSwordConfig();
+    public ReturningKnightConfig returning_knight = new ReturningKnightConfig();
+    public FallenIconConfig fallen_icon = new FallenIconConfig();
+    public boolean debugLogging = false;
     public static MSWCompatConfig getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new MSWCompatConfig();
         }
         return INSTANCE;
+    }
+
+    private void applyDefaults() {
+        if (mjolnir == null) mjolnir = new MjolnirConfig();
+        if (mjolnir.projectile == null) mjolnir.projectile = new MjolnirConfig.ProjectileConfig();
+        if (nightfall == null) nightfall = new NightfallConfig();
+        if (forlorn_scythe == null) forlorn_scythe = new ForlornScytheConfig();
+        if (leviathan_axe == null) leviathan_axe = new LeviathanAxeConfig();
+        if (leviathan_axe.ice_explosion == null) leviathan_axe.ice_explosion = new LeviathanAxeConfig.IceExplosionConfig();
+        if (lich_bane == null) lich_bane = new LichBaneConfig();
+        if (master_sword == null) master_sword = new MasterSwordConfig();
+        if (dark_moon_greatsword == null) dark_moon_greatsword = new DarkMoonGreatswordConfig();
+        if (moonlight_greatsword == null) moonlight_greatsword = new MoonlightGreatswordConfig();
+        if (bluemoon_greatsword == null) bluemoon_greatsword = new BluemoonGreatswordConfig();
+        if (pure_moonlight_greatsword == null) pure_moonlight_greatsword = new PureMoonlightGreatswordConfig();
+        if (moonlight_shortsword == null) moonlight_shortsword = new MoonlightShortswordConfig();
+        if (bluemoon_shortsword == null) bluemoon_shortsword = new BluemoonShortswordConfig();
+        if (comet_spear == null) comet_spear = new CometSpearConfig();
+        if (umbral_trespass == null) umbral_trespass = new UmbralTrespassConfig();
+        if (wither_skull == null) wither_skull = new WitherSkullConfig();
+        if (lightning == null) lightning = new LightningConfig();
+        if (excalibur == null) excalibur = new ExcaliburConfig();
+        if (soul_reaper == null) soul_reaper = new SoulReaperConfig();
+        if (frostmourne == null) frostmourne = new FrostmourneConfig();
+        if (nights_edge == null) nights_edge = new NightsEdgeConfig();
+        if (holy_moonlight_greatsword == null) holy_moonlight_greatsword = new HolyMoonlightGreatswordConfig();
+        if (rime_spectre == null) rime_spectre = new RimeSpectreConfig();
+        if (soulmass == null) soulmass = new SoulmassConfig();
+        if (evoker_fangs == null) evoker_fangs = new EvokerFangsConfig();
+        if (supernova == null) supernova = new SupernovaConfig();
+        if (moonveil == null) moonveil = new MoonveilConfig();
+        if (dragonbane == null) dragonbane = new DragonbaneConfig();
+        if (dragon_staff == null) dragon_staff = new DragonStaffConfig();
+        if (darkin_blade == null) darkin_blade = new DarkinBladeConfig();
+        if (darkin_scythe_prime == null) darkin_scythe_prime = new DarkinScythePrimeConfig();
+        if (whirligig_sawblade == null) whirligig_sawblade = new WhirligigSawbladeConfig();
+        if (tonitrus == null) tonitrus = new TonitrusConfig();
+        if (ghost_glaive == null) ghost_glaive = new GhostGlaiveConfig();
+        if (freyr_sword == null) freyr_sword = new FreyrSwordConfig();
+        if (dawnbreaker == null) dawnbreaker = new DawnbreakerConfig();
+        if (empowered_dawnbreaker == null) empowered_dawnbreaker = new EmpoweredDawnbreakerConfig();
+        if (draupnir_spear == null) draupnir_spear = new DraupnirSpearConfig();
+        if (dragonslayer_swordspear == null) dragonslayer_swordspear = new DragonslayerSwordspearConfig();
+        if (bloodthirster == null) bloodthirster = new BloodthirsterConfig();
+        if (blade_dance == null) blade_dance = new BladeDanceConfig();
+        if (bloodlust == null) bloodlust = new BloodlustConfig();
+        if (darkmoon_longbow == null) darkmoon_longbow = new DarkmoonLongbowConfig();
+        if (galeforce == null) galeforce = new GaleforceConfig();
+        if (heap_of_raw_iron == null) heap_of_raw_iron = new HeapOfRawIronConfig();
+        if (kraken_slayer == null) kraken_slayer = new KrakenSlayerConfig();
+        if (kraken_slayer_bow == null) kraken_slayer_bow = new KrakenSlayerBowConfig();
+        if (kraken_slayer_crossbow == null) kraken_slayer_crossbow = new KrakenSlayerCrossbowConfig();
+        if (blood_loss == null) blood_loss = new BloodLossConfig();
+        if (nightlords_sword == null) nightlords_sword = new NightlordsSwordConfig();
+        if (returning_knight == null) returning_knight = new ReturningKnightConfig();
+        if (fallen_icon == null) fallen_icon = new FallenIconConfig();
     }
 
     public static void load(Path configDir) {
@@ -78,6 +137,7 @@ public class MSWCompatConfig {
             try (FileReader reader = new FileReader(configFile)) {
                 MSWCompatConfig loaded = GSON.fromJson(reader, MSWCompatConfig.class);
                 if (loaded != null) {
+                    loaded.applyDefaults();
                     INSTANCE = loaded;
                 } else {
                     INSTANCE = new MSWCompatConfig();
@@ -354,6 +414,7 @@ public class MSWCompatConfig {
 
     public static class DraupnirSpearConfig {
         public float attackDamageBaseline = 8.0F;
+        public float explosionSizeMaxMultiplier = 5.0F;
     }
 
     public static class DragonslayerSwordspearConfig {
@@ -433,5 +494,15 @@ public class MSWCompatConfig {
         public float rageWeight = 0.75F;
         public float minScale = 0.5F;
         public float maxScale = 10.0F;
+    }
+
+    public static class ReturningKnightConfig {
+        public boolean replaceArrowImmunityWithResistance = true;
+        public float arrowDamageResistanceMultiplier = 0.5F;
+    }
+
+    public static class FallenIconConfig {
+        public boolean replaceArrowReflectionWithResistance = true;
+        public float arrowDamageResistanceMultiplier = 0.5F;
     }
 }

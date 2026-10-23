@@ -26,7 +26,7 @@ public abstract class DragonslayerSwordspearStormAttributionMixin {
     @Inject(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
             at = @At("HEAD"),
-            require = 0
+            remap = true
     )
     private void mswcompat$storeStormUser(ServerWorld world, ItemStack stack, PlayerEntity player, @Nullable Hand hand, CallbackInfo ci) {
         mswcompat$stormUser.set(player);
@@ -35,7 +35,7 @@ public abstract class DragonslayerSwordspearStormAttributionMixin {
     @Inject(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
             at = @At("TAIL"),
-            require = 0
+            remap = true
     )
     private void mswcompat$clearStormUser(ServerWorld world, ItemStack stack, PlayerEntity player, @Nullable Hand hand, CallbackInfo ci) {
         mswcompat$stormUser.remove();
@@ -43,9 +43,9 @@ public abstract class DragonslayerSwordspearStormAttributionMixin {
 
     @ModifyArg(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;spawnEntity(Lnet/minecraft/entity/Entity;)Z", remap = true),
             index = 0,
-            require = 0
+            remap = true
     )
     private Entity mswcompat$attributeStormLightning(Entity e) {
         PlayerEntity u = mswcompat$stormUser.get();

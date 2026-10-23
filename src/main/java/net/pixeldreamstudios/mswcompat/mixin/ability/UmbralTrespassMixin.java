@@ -8,6 +8,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.soulsweaponry.items.abilities.use.UmbralTrespass;
 import net.soulsweaponry.items.scythe.DarkinScythePrime;
 import net.soulsweaponry.items.scythe.ShadowAssassinScythe;
@@ -20,14 +21,15 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin( value = UmbralTrespass.class, remap = false )
+@Mixin(value = UmbralTrespass.class, remap = false)
 public abstract class UmbralTrespassMixin {
-    @Unique private static final ThreadLocal<Float> mswcompat$trespassFactor = ThreadLocal.withInitial(() -> 1.0F);
+    @Unique
+    private static final ThreadLocal<Float> mswcompat$factor = ThreadLocal.withInitial(() -> 1.0F);
 
     @Inject(
             method = "use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/util/TypedActionResult;",
             at = @At("HEAD"),
-            require = 0
+            remap = true
     )
     private void mswcompat$cacheTrespassFactor(World world, PlayerEntity user, Hand hand, ItemStack stack, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         float baseline = 0.0F;
@@ -39,31 +41,30 @@ public abstract class UmbralTrespassMixin {
             baseline = ConfigHelper.getBaselineValue("umbral_trespass.shadow_assassin_scythe_baseline", 13.0F);
         }
 
-        float factor = 1.0F;
-        if (baseline > 0.0F) {
-            double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-            if (ad > 0.0) factor = (float)(ad / baseline);
-        }
-        mswcompat$trespassFactor.set(factor);
+        mswcompat$factor.set(DamageScalingHelper.attackDamageOnly(
+                user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE), baseline));
     }
 
     @ModifyArg(
             method = "use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/util/TypedActionResult;",
-            at = @At(value = "INVOKE", target = "Lnet/soulsweaponry/entitydata/UmbralTrespassData;setOtherStats(Lnet/minecraft/entity/LivingEntity;FIFD)V"),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/soulsweaponry/entitydata/UmbralTrespassData;setOtherStats(Lnet/minecraft/entity/LivingEntity;FIFD)V",
+                    remap = true
+            ),
             index = 1,
-            require = 0
+            remap = true
     )
     private float mswcompat$scaleTrespassDamage(float damage) {
-        float scaled = damage * mswcompat$trespassFactor.get();
-        return scaled;
+        return damage * mswcompat$factor.get();
     }
 
     @Inject(
             method = "use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/util/TypedActionResult;",
             at = @At("RETURN"),
-            require = 0
+            remap = true
     )
     private void mswcompat$clearTrespassFactor(World world, PlayerEntity user, Hand hand, ItemStack stack, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        mswcompat$trespassFactor.remove();
+        mswcompat$factor.remove();
     }
 }

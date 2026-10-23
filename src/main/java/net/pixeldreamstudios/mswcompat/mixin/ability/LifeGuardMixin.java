@@ -7,6 +7,7 @@ import net.minecraft.util.Hand;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.userdamaged.LifeGuard;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,8 +27,8 @@ public abstract class LifeGuardMixin {
     @Inject(
             method = "modifyUserDamageTaken(Lnet/minecraft/entity/LivingEntity;FLnet/minecraft/entity/damage/DamageSource;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/Hand;)F",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheScale(LivingEntity user, float damageTaken, DamageSource source, ItemStack stack, Hand hand, CallbackInfoReturnable<Float> cir) {
         boolean shouldScale = ItemMatcher.isExcalibur(stack);
         mswcompat$shouldScale.set(shouldScale);
@@ -47,10 +48,7 @@ public abstract class LifeGuardMixin {
             double arc = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.ARCANE);
             double soul = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.SOUL);
 
-            float arcPart = arcaneBaseline > 0.0F ? (float)(arc / arcaneBaseline) : 0.0F;
-            float soulPart = soulBaseline > 0.0F ?  (float)(soul / soulBaseline) : 0.0F;
-
-            factor = 1.0F + arcaneWeight * arcPart + soulWeight * soulPart;
+            factor = DamageScalingHelper.dualFromZero(arc, arcaneBaseline, arcaneWeight, soul, soulBaseline, soulWeight);
         }
         mswcompat$explosionScale.set(factor);
     }
@@ -59,8 +57,8 @@ public abstract class LifeGuardMixin {
             method = "modifyUserDamageTaken(Lnet/minecraft/entity/LivingEntity;FLnet/minecraft/entity/damage/DamageSource;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/Hand;)F",
             at = @At(value = "STORE"),
             ordinal = 2,
-            require = 0
-    )
+            remap = true
+)
     private float mswcompat$scaleExplosionDamage(float explosionDamage) {
         if (!mswcompat$shouldScale.get()) {
             return explosionDamage;
@@ -71,8 +69,8 @@ public abstract class LifeGuardMixin {
     @Inject(
             method = "modifyUserDamageTaken(Lnet/minecraft/entity/LivingEntity;FLnet/minecraft/entity/damage/DamageSource;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/Hand;)F",
             at = @At("RETURN"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clearScale(LivingEntity user, float damageTaken, DamageSource source, ItemStack stack, Hand hand, CallbackInfoReturnable<Float> cir) {
         mswcompat$explosionScale.remove();
         mswcompat$shouldScale.remove();

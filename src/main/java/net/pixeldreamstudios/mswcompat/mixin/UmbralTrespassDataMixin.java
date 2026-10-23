@@ -1,32 +1,31 @@
 package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.soulsweaponry.entitydata.UmbralTrespassData;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Pseudo
-@Mixin( value = UmbralTrespassData.class, remap = false )
+@Mixin(LivingEntity.class)
 public abstract class UmbralTrespassDataMixin {
 
-    @ModifyArg(
+    @Redirect(
             method = "*",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"
-            ),
-            index = 0,
-            require = 0
+                    target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
+                    remap = true
+            )
     )
-    private static DamageSource mswcompat$forcePlayerAttackSource(DamageSource original) {
-        Entity attacker = original.getAttacker();
-        if (attacker instanceof PlayerEntity player) {
-            return player.getDamageSources().playerAttack(player);
+    private boolean mswcompat$forcePlayerAttackSource(LivingEntity target, DamageSource source, float amount) {
+        Entity attacker = source.getAttacker();
+        if (attacker instanceof PlayerEntity player
+                && UmbralTrespassData.shouldDamageRiding(player)) {
+            source = player.getDamageSources().playerAttack(player);
         }
-        return original;
+        return ((Entity) target).damage(source, amount);
     }
 }

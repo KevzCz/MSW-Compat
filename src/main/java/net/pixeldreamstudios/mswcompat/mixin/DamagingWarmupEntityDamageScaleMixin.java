@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.entity.projectile.noclip.DamagingWarmupEntity;
 import net.soulsweaponry.entity.projectile.noclip.FlamePillar;
@@ -38,9 +39,7 @@ public abstract class DamagingWarmupEntityDamageScaleMixin {
 
         double fire = SpellPowerHelper.getEffectiveSpellPower(living, MSWCompatIdentifiers.SpellPower.FIRE);
 
-        float firePart = fireBaseline > 0.0F ? (float)(fire / fireBaseline) : 0.0F;
-        float s = 1.0F + scaling * firePart;
-        return Math.max(s, 0.0F);
+        return DamageScalingHelper.factor(fire, fireBaseline, scaling, DamageScalingHelper.Mode.FROM_ZERO);
     }
 
     @ModifyArg(
@@ -51,7 +50,7 @@ public abstract class DamagingWarmupEntityDamageScaleMixin {
                     remap = true
             ),
             index = 1,
-            require = 0
+            remap = true
     )
     private float mswcompat$scaleWarmupDamage(float amount) {
         return amount * mswcompat$computeScale();

@@ -1,12 +1,13 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.soulsweaponry.items.abilities.posthit.BladeDance;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,13 +29,13 @@ public abstract class BladeDanceMixin {
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/attribute/AttributeContainer;getValue(Lnet/minecraft/registry/entry/RegistryEntry;)D",
+                    target = "Lnet/minecraft/entity/LivingEntity;getAttributeValue(Lnet/minecraft/registry/entry/RegistryEntry;)D",
                     remap = true
             ),
-            require = 0
+            remap = true
     )
-    private double mswcompat$cacheScaleOnAttributeGet(AttributeContainer instance, RegistryEntry registryEntry, ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        double originalValue = instance.getValue(registryEntry);
+    private double mswcompat$cacheScaleOnAttributeGet(LivingEntity entity, RegistryEntry<EntityAttribute> registryEntry, ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        double originalValue = entity.getAttributeValue(registryEntry);
 
         boolean shouldScale = ItemMatcher.isGlaiveOfHodir(stack);
         mswcompat$shouldScale.set(shouldScale);
@@ -52,10 +53,9 @@ public abstract class BladeDanceMixin {
         double ad = attacker.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         double as = attacker.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED);
 
-        float adPart = adBaseline > 0.0F ? (float)(ad / adBaseline) : 1.0F;
-        float asPart = asBaseline > 0.0F ? (float)(as / asBaseline) : 1.0F;
-
-        float scale = 1.0F + adWeight * (adPart - 1.0F) + asWeight * (asPart - 1.0F);
+        float scale = DamageScalingHelper.factor(
+                ad, adBaseline, adWeight, DamageScalingHelper.Mode.ABOVE_BASELINE,
+                as, asBaseline, asWeight, DamageScalingHelper.Mode.ABOVE_BASELINE);
         mswcompat$aoeScale.set(scale);
 
         return originalValue;
@@ -65,9 +65,10 @@ public abstract class BladeDanceMixin {
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"
+                    target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
+                    remap = true
             ),
-            require = 0
+            remap = true
     )
     private boolean mswcompat$scaleAoESweep(LivingEntity target, DamageSource source, float amount) {
         if (! mswcompat$shouldScale.get()) {

@@ -37,8 +37,7 @@ public abstract class RimeSpectreFrostBeamScalingMixin {
     @Redirect(
             method = "frostBeam(Lnet/minecraft/entity/LivingEntity;)V",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"),
-            require = 0
+                    target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z")
     )
     private boolean mswcompat$scaleRimeSpectreBeamDamage(LivingEntity target, DamageSource source, float amount) {
         return target.damage(source, amount * mswcompat$factorFromSource(source));

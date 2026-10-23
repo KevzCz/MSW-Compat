@@ -5,6 +5,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -23,8 +24,7 @@ public abstract class EvokerFangsScalingMixin {
         if (soulBaseline <= 0.0F) return 1.0F;
 
         double soul = SpellPowerHelper.getEffectiveSpellPower(owner, MSWCompatIdentifiers.SpellPower.SOUL);
-        float factor = (float)(soul / soulBaseline);
-        return Math.max(0.0F, factor);
+        return Math.max(0.0F, DamageScalingHelper.ratioMultiplier(soul, soulBaseline));
     }
 
     @Redirect(
@@ -33,8 +33,7 @@ public abstract class EvokerFangsScalingMixin {
                     value = "INVOKE",
                     target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
                     ordinal = 0
-            ),
-            require = 0
+            )
     )
     private boolean mswcompat$scaleFangsDamageNoOwner(LivingEntity target,
                                                       DamageSource src,
@@ -49,8 +48,7 @@ public abstract class EvokerFangsScalingMixin {
                     value = "INVOKE",
                     target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
                     ordinal = 1
-            ),
-            require = 0
+            )
     )
     private boolean mswcompat$scaleFangsDamageWithOwner(LivingEntity target,
                                                         DamageSource src,

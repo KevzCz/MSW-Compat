@@ -6,6 +6,8 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
+import net.pixeldreamstudios.mswcompat.util.MswCompatDebug;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.api.entitystats.EntityBleed;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,13 +23,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class EntityBleedMixin {
 
     @Unique private static final ThreadLocal<Float> mswcompat$bloodLossScale = ThreadLocal.withInitial(() -> 1.0F);
+    @Unique private static final ThreadLocal<LivingEntity> mswcompat$entity = new ThreadLocal<>();
 
     @Inject(
             method = "triggerBloodLoss(Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("HEAD"),
-            require = 0
+            remap = true
     )
     private static void mswcompat$cacheBloodLossScale(LivingEntity entity, CallbackInfo ci) {
+        mswcompat$entity.set(entity);
         float factor = 1.0F;
 
         float adBaseline = ConfigHelper.getBaselineValue("blood_loss.attack_damage_baseline", 10.0F);
@@ -43,34 +47,38 @@ public abstract class EntityBleedMixin {
             rage = entity.getAttributeValue(rageEntry);
         }
 
-        float adPart = adBaseline > 0.0F ? (float)(ad / adBaseline) : 1.0F;
-        float ragePart = rageBaseline > 0.0F ? (float)(rage / rageBaseline) : 0.0F;
-
-        factor = 1.0F + adWeight * (adPart - 1.0F) + rageWeight * ragePart;
+        factor = DamageScalingHelper.attackDamageAndSecondary(ad, adBaseline, adWeight, rage, rageBaseline, rageWeight);
 
         float minScale = ConfigHelper.getBaselineValue("blood_loss.min_scale", 0.5F);
         float maxScale = ConfigHelper.getBaselineValue("blood_loss.max_scale", 10.0F);
-        factor = Math.max(minScale, Math.min(maxScale, factor));
+        factor = DamageScalingHelper.clamp(factor, minScale, maxScale);
 
         mswcompat$bloodLossScale.set(factor);
     }
 
     @ModifyArg(
             method = "triggerBloodLoss(Lnet/minecraft/entity/LivingEntity;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z", remap = true),
             index = 1,
-            require = 0
+            remap = true
     )
     private static float mswcompat$scaleBloodLossDamage(float damage) {
-        return damage * mswcompat$bloodLossScale.get();
+        float factor = mswcompat$bloodLossScale.get();
+        float scaled = damage * factor;
+        LivingEntity entity = mswcompat$entity.get();
+        if (entity != null) {
+            MswCompatDebug.logBloodLoss(entity, damage, scaled, factor);
+        }
+        return scaled;
     }
 
     @Inject(
             method = "triggerBloodLoss(Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("TAIL"),
-            require = 0
+            remap = true
     )
     private static void mswcompat$clearBloodLossScale(LivingEntity entity, CallbackInfo ci) {
         mswcompat$bloodLossScale.remove();
+        mswcompat$entity.remove();
     }
 }

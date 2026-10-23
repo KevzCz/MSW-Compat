@@ -25,7 +25,7 @@ public abstract class ChaosStormMixin {
     @Inject(
             method = "summonFlamePillars(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("HEAD"),
-            require = 0
+            remap = true
     )
     private void mswcompat$cacheFireScale(World world, ItemStack stack, LivingEntity user, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isEmpoweredDawnbreaker(stack);
@@ -49,10 +49,10 @@ public abstract class ChaosStormMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/soulsweaponry/entity/projectile/noclip/FlamePillar;setDamage(D)V",
-                    remap = false
+                    remap = true
             ),
             index = 0,
-            require = 0
+            remap = true
     )
     private double mswcompat$scaleFlamePillarDamage(double baseDamage) {
         if (!mswcompat$shouldScale.get()) {
@@ -64,7 +64,7 @@ public abstract class ChaosStormMixin {
     @Inject(
             method = "summonFlamePillars(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("TAIL"),
-            require = 0
+            remap = true
     )
     private void mswcompat$clearFireScale(World world, ItemStack stack, LivingEntity user, CallbackInfo ci) {
         mswcompat$scale.remove();

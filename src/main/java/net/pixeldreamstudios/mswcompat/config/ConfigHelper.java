@@ -395,8 +395,14 @@ public class ConfigHelper {
                 return config.mjolnir.rainLightningWeight;
             case "mjolnir.rain_water_weight":
                 return config.mjolnir.rainWaterWeight;
+            case "draupnir_spear.explosion_size_max_multiplier":
+                return config.draupnir_spear.explosionSizeMaxMultiplier;
             default:
                 return defaultValue;
         }
+    }
+
+    public static boolean isDebugLogging() {
+        return MSWCompatConfig.getInstance().debugLogging;
     }
 }

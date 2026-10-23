@@ -8,6 +8,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.soulsweaponry.entity.projectile.MjolnirProjectile;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -29,15 +30,11 @@ public abstract class MjolnirProjectileDamageMixin {
         MjolnirProjectile self = (MjolnirProjectile) (Object) this;
         Entity owner = self.getOwner();
         if (owner instanceof LivingEntity living) {
-            float adBaseline = ConfigHelper.getBaselineValue("mjolnir.projectile.attack_damage_baseline", 13.0F);
-            if (adBaseline > 0.0F) {
-                double ad = living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                if (ad > 0.0) {
-                    factor = (float) (ad / adBaseline);
-                }
-            }
+            factor = DamageScalingHelper.attackDamageOnly(
+                    living.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
+                    ConfigHelper.getBaselineValue("mjolnir.projectile.attack_damage_baseline", 13.0F));
         }
-        mswcompat$factor.set(Math.max(0.0F, factor));
+        mswcompat$factor.set(factor);
         mswcompat$didScale.set(false);
     }
 

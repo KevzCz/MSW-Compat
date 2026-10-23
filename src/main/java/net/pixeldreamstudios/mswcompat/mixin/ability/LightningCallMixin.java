@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -27,9 +28,9 @@ public abstract class LightningCallMixin {
 
     @Inject(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;)Z"),
-            require = 0
-    )
+            at = @At("HEAD"),
+            remap = true
+)
     private void mswcompat$calculateScaling(ServerWorld world, ItemStack stack, PlayerEntity player, @Nullable Hand hand, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isDragonslayerSwordspear(stack);
         mswcompat$shouldScale.set(shouldScale);
@@ -70,8 +71,8 @@ public abstract class LightningCallMixin {
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
             at = @At(value = "STORE"),
             ordinal = 1,
-            require = 0
-    )
+            remap = true
+)
     private int mswcompat$addLightningAmount(int lightning) {
         if (! mswcompat$shouldScale.get()) {
             return lightning;
@@ -79,11 +80,15 @@ public abstract class LightningCallMixin {
         return lightning + mswcompat$lightningBonus.get();
     }
 
-    @ModifyVariable(
+    @ModifyArg(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"),
-            ordinal = 0,
-            require = 0
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
+                    remap = true
+            ),
+            index = 1,
+            remap = true
     )
     private float mswcompat$scaleStompDamage(float damage) {
         if (!mswcompat$shouldScale.get()) {
@@ -95,8 +100,8 @@ public abstract class LightningCallMixin {
     @Inject(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clear(ServerWorld world, ItemStack stack, PlayerEntity player, @Nullable Hand hand, CallbackInfo ci) {
         mswcompat$stompScale.remove();
         mswcompat$lightningBonus.remove();

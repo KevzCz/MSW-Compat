@@ -8,6 +8,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.AttributeHelper;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.soulsweaponry.items.abilities.stoppedusing.MoonveilHorizontal;
@@ -28,7 +29,7 @@ public abstract class MoonveilHorizontalMixin {
     @Inject(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At("HEAD"),
-            require = 0
+            remap = true
     )
     private void mswcompat$cacheScale(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isMoonveil(stack);
@@ -54,23 +55,20 @@ public abstract class MoonveilHorizontalMixin {
                 rage = user.getAttributeValue(rageEntry);
             }
 
-            float adPart = adBaseline > 0.0F ? (float)(ad / adBaseline) : 1.0F;
-            float ragePart = rageBaseline > 0.0F ? (float)(rage / rageBaseline) : 0.0F;
-
-            factor = 1.0F + adWeight * (adPart - 1.0F) + rageWeight * ragePart;
+            factor = DamageScalingHelper.attackDamageAndSecondary(ad, adBaseline, adWeight, rage, rageBaseline, rageWeight);
         }
 
-        mswcompat$damageScale.set(Math.max(0.0F, factor));
+        mswcompat$damageScale.set(factor);
     }
 
     @ModifyArg(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
-            at = @At(value = "INVOKE", target = "Lnet/soulsweaponry/entity/projectile/noclip/MoonveilWave;setDamage(D)V"),
+            at = @At(value = "INVOKE", target = "Lnet/soulsweaponry/entity/projectile/noclip/MoonveilWave;setDamage(D)V", remap = true),
             index = 0,
-            require = 0
+            remap = true
     )
     private double mswcompat$scaleDamage(double damage) {
-        if (!  mswcompat$shouldScale.get()) {
+        if (!mswcompat$shouldScale.get()) {
             return damage;
         }
         return damage * mswcompat$damageScale.get();
@@ -79,7 +77,7 @@ public abstract class MoonveilHorizontalMixin {
     @Inject(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At("TAIL"),
-            require = 0
+            remap = true
     )
     private void mswcompat$clearScale(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
         mswcompat$damageScale.remove();

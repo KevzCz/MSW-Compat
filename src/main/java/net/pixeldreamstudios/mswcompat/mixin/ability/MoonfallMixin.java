@@ -5,6 +5,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.soulsweaponry.items.abilities.stoppedusing.Moonfall;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,8 +25,8 @@ public abstract class MoonfallMixin {
     @Inject(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheScale(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isHolyMoonlightGreatsword(stack);
         mswcompat$shouldScale.set(shouldScale);
@@ -37,14 +38,9 @@ public abstract class MoonfallMixin {
 
         float factor = 1.0F;
         if (user != null) {
-            float adBaseline = ConfigHelper.getBaselineValue("holy_moonlight_greatsword.attack_damage_baseline", 10.0F);
-
-            if (adBaseline > 0.0F) {
-                double ad = user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                if (ad > 0.0) {
-                    factor = (float)(ad / adBaseline);
-                }
-            }
+            factor = DamageScalingHelper.attackDamageOnly(
+                    user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
+                    ConfigHelper.getBaselineValue("holy_moonlight_greatsword.attack_damage_baseline", 10.0F));
         }
 
         mswcompat$scale.set(factor);
@@ -54,8 +50,8 @@ public abstract class MoonfallMixin {
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At(value = "STORE"),
             ordinal = 0,
-            require = 0
-    )
+            remap = true
+)
     private float mswcompat$scalePower(float power) {
         if (! mswcompat$shouldScale.get()) {
             return power;
@@ -66,8 +62,8 @@ public abstract class MoonfallMixin {
     @Inject(
             method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clearScale(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
         mswcompat$scale.remove();
         mswcompat$shouldScale.remove();

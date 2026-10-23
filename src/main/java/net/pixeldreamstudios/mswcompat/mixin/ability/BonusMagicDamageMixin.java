@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
+import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
 import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import net.soulsweaponry.items.abilities.posthit.BonusMagicDamage;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +25,7 @@ public abstract class BonusMagicDamageMixin {
     @Inject(
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("HEAD"),
-            require = 0
+            remap = true
     )
     private void mswcompat$cacheScale(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isLichBane(stack);
@@ -37,22 +38,19 @@ public abstract class BonusMagicDamageMixin {
 
         float factor = 1.0F;
         if (attacker != null) {
-            double fire = SpellPowerHelper.getEffectiveSpellPower(attacker, MSWCompatIdentifiers.SpellPower.FIRE);
-
-            float fireBaseline = ConfigHelper.getBaselineValue("lich_bane.fire_baseline", 20.0F);
-            if (fireBaseline > 0.0F) {
-                factor = 1.0F + (float)(fire / fireBaseline);
-            }
+            factor = DamageScalingHelper.spellPowerFactor(
+                    attacker, MSWCompatIdentifiers.SpellPower.FIRE,
+                    ConfigHelper.getBaselineValue("lich_bane.fire_baseline", 20.0F));
         }
 
-        mswcompat$damageScale.set(Math.max(0.0F, factor));
+        mswcompat$damageScale.set(factor);
     }
 
     @ModifyVariable(
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At(value = "STORE"),
             ordinal = 0,
-            require = 0
+            remap = true
     )
     private float mswcompat$scaleMagicDamage(float dmg) {
         if (!mswcompat$shouldScale.get()) {
@@ -64,7 +62,7 @@ public abstract class BonusMagicDamageMixin {
     @Inject(
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("TAIL"),
-            require = 0
+            remap = true
     )
     private void mswcompat$clearScale(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfo ci) {
         mswcompat$damageScale.remove();

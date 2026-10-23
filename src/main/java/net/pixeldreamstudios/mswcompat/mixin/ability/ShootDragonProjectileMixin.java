@@ -28,8 +28,8 @@ public abstract class ShootDragonProjectileMixin {
     @Inject(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheArcaneScaling(ServerWorld world, ItemStack stack, PlayerEntity user, @Nullable Hand hand, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isDragonStaff(stack);
         mswcompat$shouldScale.set(shouldScale);
@@ -50,9 +50,13 @@ public abstract class ShootDragonProjectileMixin {
 
     @Redirect(
             method = "getDragonStaffProjectile(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;I)Lnet/soulsweaponry/entity/projectile/DragonStaffProjectile;",
-            at = @At(value = "INVOKE", target = "Lnet/soulsweaponry/entity/projectile/DragonStaffProjectile;setEffectAmp(I)V"),
-            require = 0
-    )
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/soulsweaponry/entity/projectile/DragonStaffProjectile;setEffectAmp(I)V",
+                    remap = false
+            ),
+            remap = true
+)
     private void mswcompat$boostEffectAmp(DragonStaffProjectile projectile, int amp) {
         if (!mswcompat$shouldScale.get()) {
             projectile.setEffectAmp(amp);
@@ -64,8 +68,8 @@ public abstract class ShootDragonProjectileMixin {
     @Inject(
             method = "useKeybindAbilityServer(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)V",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clearArcaneScaling(ServerWorld world, ItemStack stack, PlayerEntity user, @Nullable Hand hand, CallbackInfo ci) {
         mswcompat$auraAmp.remove();
         mswcompat$shouldScale.remove();

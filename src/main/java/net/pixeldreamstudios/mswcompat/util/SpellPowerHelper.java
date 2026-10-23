@@ -4,28 +4,36 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
+import net.spell_power.api.SpellPower;
+import net.spell_power.api.SpellSchool;
+import net.spell_power.api.SpellSchools;
+import org.jetbrains.annotations.Nullable;
 
 public class SpellPowerHelper {
-    private static final Identifier GENERIC_SPELL_POWER = Identifier.of("spell_power", "generic");
 
     public static double getEffectiveSpellPower(LivingEntity entity, Identifier schoolId) {
         if (entity == null) return 0.0;
 
-        RegistryEntry.Reference<EntityAttribute> schoolAttr = AttributeHelper.getAttributeEntry(schoolId);
-        RegistryEntry.Reference<EntityAttribute> genericAttr = AttributeHelper.getAttributeEntry(GENERIC_SPELL_POWER);
+        SpellSchool school = resolveSchool(schoolId);
+        if (school != null) {
+            return SpellPower.getSpellPower(school, entity).nonCriticalValue();
+        }
 
-        double schoolPower = (schoolAttr != null) ? entity.getAttributeValue(schoolAttr) : 0.0;
-        double genericPower = (genericAttr != null) ? entity.getAttributeValue(genericAttr) : 1.0;
-
-        double genericMultiplier = genericPower;
-
-        return schoolPower * genericMultiplier;
+        return getRawAttributeValue(entity, schoolId);
     }
 
     public static float getScalingFactor(LivingEntity entity, Identifier schoolId, float baseline) {
-        if (baseline <= 0.0F) return 1.0F;
+        return DamageScalingHelper.spellPowerFactor(entity, schoolId, baseline);
+    }
 
-        double effectivePower = getEffectiveSpellPower(entity, schoolId);
-        return 1.0F + (float)(effectivePower / baseline);
+    @Nullable
+    private static SpellSchool resolveSchool(Identifier schoolId) {
+        return SpellSchools.getSchool(schoolId.toString());
+    }
+
+    private static double getRawAttributeValue(LivingEntity entity, Identifier attributeId) {
+        RegistryEntry.Reference<EntityAttribute> attr = AttributeHelper.getAttributeEntry(attributeId);
+        if (attr == null) return 0.0;
+        return entity.getAttributeValue(attr);
     }
 }

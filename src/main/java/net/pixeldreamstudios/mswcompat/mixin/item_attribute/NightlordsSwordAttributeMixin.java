@@ -47,31 +47,31 @@ public abstract class NightlordsSwordAttributeMixin {
         EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.ADD_VALUE;
 
         switch (effectId) {
-            case 1: // BLEED
+            case 1:
                 attr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.MoreRPGLibrary.RAGE);
                 bonus = 0.20;
                 modifierId = MSWCompatIdentifiers.ModifierIds.NIGHTLORDS_SWORD_RAGE;
                 operation = EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE;
                 break;
-            case 2: // POISON
+            case 2:
                 attr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.ARCANE);
                 bonus = 4.0;
                 modifierId = MSWCompatIdentifiers.ModifierIds.NIGHTLORDS_SWORD_ARCANE;
                 operation = EntityAttributeModifier.Operation.ADD_VALUE;
                 break;
-            case 3: // CHAIN_LIGHTNING
+            case 3:
                 attr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.LIGHTNING);
                 bonus = 4.0;
                 modifierId = MSWCompatIdentifiers.ModifierIds.NIGHTLORDS_SWORD_LIGHTNING;
                 operation = EntityAttributeModifier.Operation.ADD_VALUE;
                 break;
-            case 4: // WITHER
+            case 4:
                 attr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.SOUL);
                 bonus = 4.0;
                 modifierId = MSWCompatIdentifiers.ModifierIds.NIGHTLORDS_SWORD_SOUL;
                 operation = EntityAttributeModifier.Operation.ADD_VALUE;
                 break;
-            case 5: // FREEZE
+            case 5:
                 RegistryEntry.Reference<EntityAttribute> waterAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.MoreRPGLibrary.WATER);
                 RegistryEntry.Reference<EntityAttribute> frostAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FROST);
 
@@ -90,20 +90,20 @@ public abstract class NightlordsSwordAttributeMixin {
                     ));
                 }
                 return;
-            case 6: // FIRE
+            case 6:
                 attr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellPower.FIRE);
                 bonus = 4.0;
                 modifierId = MSWCompatIdentifiers.ModifierIds.NIGHTLORDS_SWORD_FIRE;
                 operation = EntityAttributeModifier.Operation.ADD_VALUE;
                 break;
-            case 7: // CRIPPLE
+            case 7:
                 consumer.accept(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(
                         MSWCompatIdentifiers.ModifierIds.NIGHTLORDS_SWORD_ATTACK_SPEED,
                         0.20,
                         EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE
                 ));
                 return;
-            case 8: // DECAY
+            case 8:
                 attr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.SpellEngine.HEALING_TAKEN);
                 bonus = 0.20;
                 modifierId = MSWCompatIdentifiers.ModifierIds.NIGHTLORDS_SWORD_HEALING;

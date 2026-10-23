@@ -25,13 +25,13 @@ public abstract class DawnbreakerExplosionMixin {
     @Inject(
             method = "dawnbreakerEvent(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;)V",
             at = @At("HEAD"),
-            require = 0
+            remap = true
     )
     private void mswcompat$cacheEventFactor(World world, LivingEntity target, LivingEntity attacker, ItemStack stack, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isDawnbreaker(stack) || ItemMatcher.isEmpoweredDawnbreaker(stack);
         mswcompat$shouldScale.set(shouldScale);
 
-        if (!  shouldScale) {
+        if (!shouldScale) {
             mswcompat$eventFactor.set(1.0F);
             return;
         }
@@ -48,9 +48,9 @@ public abstract class DawnbreakerExplosionMixin {
 
     @ModifyArg(
             method = "dawnbreakerEvent(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z", remap = true),
             index = 1,
-            require = 0
+            remap = true
     )
     private float mswcompat$scaleDawnbreakerEventDamage(float amount) {
         if (! mswcompat$shouldScale.get()) {
@@ -62,7 +62,7 @@ public abstract class DawnbreakerExplosionMixin {
     @Inject(
             method = "dawnbreakerEvent(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;)V",
             at = @At("TAIL"),
-            require = 0
+            remap = true
     )
     private void mswcompat$clearEventFactor(World world, LivingEntity target, LivingEntity attacker, ItemStack stack, CallbackInfo ci) {
         mswcompat$eventFactor.remove();

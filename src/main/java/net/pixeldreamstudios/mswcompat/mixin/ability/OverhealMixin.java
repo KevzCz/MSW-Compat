@@ -28,8 +28,8 @@ public abstract class OverhealMixin {
     @Inject(
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("HEAD"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$cacheScale(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfo ci) {
         boolean shouldScale = ItemMatcher.isBloodthirster(stack);
         mswcompat$shouldScale.set(shouldScale);
@@ -79,8 +79,8 @@ public abstract class OverhealMixin {
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At(value = "STORE"),
             ordinal = 0,
-            require = 0
-    )
+            remap = true
+)
     private int mswcompat$scaleDuration(int duration) {
         if (!mswcompat$shouldScale.get()) {
             return duration;
@@ -92,8 +92,8 @@ public abstract class OverhealMixin {
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At(value = "STORE"),
             ordinal = 1,
-            require = 0
-    )
+            remap = true
+)
     private int mswcompat$scaleAmplifier(int amp) {
         if (!mswcompat$shouldScale.get()) {
             return amp;
@@ -104,8 +104,8 @@ public abstract class OverhealMixin {
     @Inject(
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At("TAIL"),
-            require = 0
-    )
+            remap = true
+)
     private void mswcompat$clearScale(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfo ci) {
         mswcompat$ampScale.remove();
         mswcompat$durationScale.remove();
