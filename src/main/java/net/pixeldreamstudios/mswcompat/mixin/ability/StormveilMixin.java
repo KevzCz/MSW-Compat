@@ -1,5 +1,6 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.pixeldreamstudios.mswcompat.util.AbilityScales;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -38,17 +39,7 @@ public abstract class StormveilMixin {
             return;
         }
 
-        int bonus = 0;
-        if (user != null) {
-            float ampPer = ConfigHelper.getBaselineValue("tonitrus.amplifier_per_lightning", 20.0F);
-
-            if (ampPer > 0.0F) {
-                double power = SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.LIGHTNING);
-                bonus = (int)(power / ampPer);
-            }
-        }
-
-        mswcompat$ampBonus.set(bonus);
+        mswcompat$ampBonus.set(user != null ? AbilityScales.tonitrusAmpBonus(user) : 0);
     }
 
     @ModifyVariable(

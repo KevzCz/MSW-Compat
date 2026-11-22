@@ -1,5 +1,7 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.pixeldreamstudios.mswcompat.living.LivingAbilities;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
@@ -77,5 +79,16 @@ public abstract class ObliterateMixin {
     private void mswcompat$clearScale(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
         mswcompat$damageScale.remove();
         mswcompat$shouldScale.remove();
+    }
+
+    @Inject(method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V", at = @At("HEAD"), cancellable = true, remap = true)
+    private void mswcompat$living(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
+        if (user instanceof PlayerEntity || world.isClient()) {
+            return;
+        }
+        LivingAbilities.obliterate((Obliterate) (Object) this, stack, world, user, ticksUsed, mswcompat$shouldScale.get() ? mswcompat$damageScale.get() : LivingAbilities.NO_SCALE);
+        mswcompat$shouldScale.remove();
+        mswcompat$damageScale.remove();
+        ci.cancel();
     }
 }

@@ -4,6 +4,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.living.LivingLightning;
 import net.soulsweaponry.entity.projectile.noclip.DamagingWarmupEntity;
 import net.soulsweaponry.entity.projectile.noclip.DamagingWarmupEntityEvents;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,6 +28,7 @@ public abstract class MjolnirWarmupLightningAttributionMixin {
         if (world.isSkyVisible(self.getBlockPos())) {
             LightningEntity bolt = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
             bolt.setPos(self.getX(), self.getY(), self.getZ());
+            LivingLightning.mark(bolt, self.getOwner());
             if (self.getOwner() instanceof ServerPlayerEntity sp) {
                 bolt.setChanneler(sp);
             }

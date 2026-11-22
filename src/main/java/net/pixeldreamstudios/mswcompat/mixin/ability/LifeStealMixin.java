@@ -1,5 +1,8 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.living.LivingAbilities;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -99,5 +102,16 @@ public abstract class LifeStealMixin {
     private void mswcompat$clearScale(ItemStack stack, LivingEntity attacker, CallbackInfo ci) {
         mswcompat$scale.remove();
         mswcompat$shouldScale.remove();
+    }
+
+    @Inject(method = "checkAndHeal(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;)V", at = @At("HEAD"), cancellable = true, remap = true)
+    private void mswcompat$living(ItemStack stack, LivingEntity attacker, CallbackInfo ci) {
+        if (attacker instanceof PlayerEntity || attacker.getWorld().isClient()) {
+            return;
+        }
+        LivingAbilities.lifeSteal((LifeSteal) (Object) this, stack, attacker, mswcompat$shouldScale.get() ? mswcompat$scale.get() : LivingAbilities.NO_SCALE);
+        mswcompat$shouldScale.remove();
+        mswcompat$scale.remove();
+        ci.cancel();
     }
 }

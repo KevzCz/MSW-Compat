@@ -1,5 +1,6 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.pixeldreamstudios.mswcompat.util.AbilityScales;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -43,19 +44,7 @@ public abstract class BasicKeybindAbilityMixin {
             return;
         }
 
-        float f = 1.0F;
-        if (player != null) {
-            double rage = 0.0;
-            RegistryEntry.Reference<EntityAttribute> rageEntry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.MoreRPGLibrary.RAGE);
-            if (rageEntry != null) {
-                rage = player.getAttributeValue(rageEntry);
-            }
-            f = DamageScalingHelper.multiplicativeAboveBaselineAdAndRageFromZero(
-                    player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
-                    ConfigHelper.getBaselineValue("heap_of_raw_iron.attack_damage_baseline", 12.0F),
-                    rage,
-                    ConfigHelper.getBaselineValue("heap_of_raw_iron.rage_baseline", 20.0F));
-        }
+        float f = player != null ? AbilityScales.heapOfRawIron(player) : 1.0F;
         MswCompatScaleContext.setKeybindFactor(f);
     }
 

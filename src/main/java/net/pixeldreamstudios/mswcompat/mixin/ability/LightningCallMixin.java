@@ -1,5 +1,6 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.pixeldreamstudios.mswcompat.util.AbilityScales;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -41,27 +42,8 @@ public abstract class LightningCallMixin {
             return;
         }
 
-        float stompFactor = 1.0F;
-        int lightningAdd = 0;
-
-        if (player != null) {
-            float lightningBaseline = ConfigHelper.getBaselineValue("dragonslayer_swordspear.lightning_baseline", 20.0F);
-            float waterBaseline = ConfigHelper.getBaselineValue("dragonslayer_swordspear.water_baseline", 20.0F);
-            float lightningWeight = ConfigHelper.getFloatValue("dragonslayer_swordspear.lightning_weight", 0.5F);
-            float waterWeight = ConfigHelper.getFloatValue("dragonslayer_swordspear.water_weight", 0.5F);
-
-            double lightning = SpellPowerHelper.getEffectiveSpellPower(player, MSWCompatIdentifiers.SpellPower.LIGHTNING);
-            double water = SpellPowerHelper.getEffectiveSpellPower(player, MSWCompatIdentifiers.MoreRPGLibrary.WATER);
-
-            float lightningPart = lightningBaseline > 0.0F ? (float)(lightning / lightningBaseline) : 0.0F;
-            float waterPart = waterBaseline > 0.0F ? (float)(water / waterBaseline) : 0.0F;
-
-            float totalFactor = 1.0F + lightningWeight * lightningPart + waterWeight * waterPart;
-            stompFactor = totalFactor;
-
-            float lightningPerPower = ConfigHelper.getFloatValue("dragonslayer_swordspear.lightning_per_spell_power", 0.1F);
-            lightningAdd = (int)Math.floor(lightning * lightningPerPower);
-        }
+        float stompFactor = player != null ? AbilityScales.dragonslayerStomp(player) : 1.0F;
+        int lightningAdd = player != null ? AbilityScales.dragonslayerLightning(player) : 0;
 
         mswcompat$stompScale.set(stompFactor);
         mswcompat$lightningBonus.set(lightningAdd);

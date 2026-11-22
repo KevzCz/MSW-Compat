@@ -1,12 +1,11 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
+import net.pixeldreamstudios.mswcompat.util.AbilityScales;
 import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
 import net.soulsweaponry.items.abilities.abilitykeybind.ExplodeSavedEntities;
 import org.jetbrains.annotations.Nullable;
@@ -40,16 +39,9 @@ public abstract class ExplodeSavedEntitiesMixin {
             return;
         }
 
-        float factor = 1.0F;
-        if (player != null) {
-            factor = DamageScalingHelper.attackDamageOnly(
-                    player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
-                    ConfigHelper.getBaselineValue("draupnir_spear.attack_damage_baseline", 8.0F));
-        }
-
+        float factor = player != null ? AbilityScales.draupnir(player) : 1.0F;
         mswcompat$damageScale.set(factor);
-        float sizeCap = ConfigHelper.getFloatValue("draupnir_spear.explosion_size_max_multiplier", 5.0F);
-        mswcompat$explosionScale.set(Math.min(factor, sizeCap));
+        mswcompat$explosionScale.set(AbilityScales.draupnirExplosion(factor));
     }
 
     @Inject(
@@ -62,15 +54,9 @@ public abstract class ExplodeSavedEntitiesMixin {
             return;
         }
         mswcompat$shouldScale.set(true);
-        float factor = 1.0F;
-        if (player != null) {
-            factor = DamageScalingHelper.attackDamageOnly(
-                    player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
-                    ConfigHelper.getBaselineValue("draupnir_spear.attack_damage_baseline", 8.0F));
-        }
+        float factor = player != null ? AbilityScales.draupnir(player) : 1.0F;
         mswcompat$damageScale.set(factor);
-        float sizeCap = ConfigHelper.getFloatValue("draupnir_spear.explosion_size_max_multiplier", 5.0F);
-        mswcompat$explosionScale.set(Math.min(factor, sizeCap));
+        mswcompat$explosionScale.set(AbilityScales.draupnirExplosion(factor));
     }
 
     @Inject(

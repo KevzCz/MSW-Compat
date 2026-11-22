@@ -1,5 +1,6 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.pixeldreamstudios.mswcompat.util.AbilityScales;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -39,13 +40,7 @@ public abstract class ShootDragonProjectileMixin {
             return;
         }
 
-        float arcane = 0.0F;
-        if (user != null) {
-            arcane = (float) SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.ARCANE);
-        }
-
-        float auraPer10 = ConfigHelper.getBaselineValue("dragon_staff.aura_amplifier_per_10_arcane", 1.0F);
-        mswcompat$auraAmp.set((arcane / 10.0F) * auraPer10);
+        mswcompat$auraAmp.set(user != null ? AbilityScales.dragonStaffAura(user) : 0.0F);
     }
 
     @Redirect(

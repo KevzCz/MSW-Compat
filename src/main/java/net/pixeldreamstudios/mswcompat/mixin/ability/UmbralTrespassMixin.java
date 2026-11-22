@@ -1,5 +1,6 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.pixeldreamstudios.mswcompat.util.AbilityScales;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -32,17 +33,7 @@ public abstract class UmbralTrespassMixin {
             remap = true
     )
     private void mswcompat$cacheTrespassFactor(World world, PlayerEntity user, Hand hand, ItemStack stack, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        float baseline = 0.0F;
-
-        Item item = stack.getItem();
-        if (item instanceof DarkinScythePrime) {
-            baseline = ConfigHelper.getBaselineValue("umbral_trespass.darkin_scythe_baseline", 12.0F);
-        } else if (item instanceof ShadowAssassinScythe) {
-            baseline = ConfigHelper.getBaselineValue("umbral_trespass.shadow_assassin_scythe_baseline", 13.0F);
-        }
-
-        mswcompat$factor.set(DamageScalingHelper.attackDamageOnly(
-                user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE), baseline));
+        mswcompat$factor.set(AbilityScales.umbralTrespass(stack, user));
     }
 
     @ModifyArg(

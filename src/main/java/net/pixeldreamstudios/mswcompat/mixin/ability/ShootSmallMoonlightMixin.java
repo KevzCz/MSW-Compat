@@ -1,12 +1,9 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
-import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
-import net.pixeldreamstudios.mswcompat.util.DamageScalingHelper;
-import net.pixeldreamstudios.mswcompat.util.ItemMatcher;
+import net.pixeldreamstudios.mswcompat.util.AbilityScales;
 import net.pixeldreamstudios.mswcompat.util.MswCompatScaleContext;
 import net.soulsweaponry.items.abilities.attackclick.ShootSmallMoonlight;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,23 +20,9 @@ public abstract class ShootSmallMoonlightMixin {
             remap = true
     )
     private void mswcompat$cacheScale(ServerWorld world, ItemStack stack, PlayerEntity player, CallbackInfo ci) {
-        boolean shouldScale = ItemMatcher.isMoonlightShortsword(stack) || ItemMatcher.isBluemoonShortsword(stack);
-        if (!shouldScale) {
-            return;
+        if (player != null && AbilityScales.scalesSmallMoonlight(stack)) {
+            MswCompatScaleContext.beginMoonlightShortsword(AbilityScales.smallMoonlight(player, stack));
         }
-
-        String configKey = ItemMatcher.isMoonlightShortsword(stack)
-                ? "moonlight_shortsword.attack_damage_baseline"
-                : "bluemoon_shortsword.attack_damage_baseline";
-
-        float baseline = ConfigHelper.getBaselineValue(configKey, 8.0F);
-        float factor = 1.0F;
-        if (player != null) {
-            factor = DamageScalingHelper.attackDamageOnly(
-                    player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE), baseline);
-        }
-
-        MswCompatScaleContext.beginMoonlightShortsword(factor);
     }
 
     @Inject(

@@ -1,5 +1,6 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.pixeldreamstudios.mswcompat.util.AbilityScales;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -42,25 +43,7 @@ public abstract class CloudburstMixin {
             return;
         }
 
-        float factor = 1.0F;
-        if (player != null) {
-            float rangedBaseline = ConfigHelper.getBaselineValue("galeforce.ranged_damage_baseline", 9.0F);
-            float airBaseline = ConfigHelper.getBaselineValue("galeforce.air_baseline", 20.0F);
-            float rangedWeight = ConfigHelper.getFloatValue("galeforce.ranged_weight", 0.7F);
-            float airWeight = ConfigHelper.getFloatValue("galeforce.air_weight", 0.3F);
-
-            double ranged = 0.0;
-            double air = SpellPowerHelper.getEffectiveSpellPower(player, MSWCompatIdentifiers.MoreRPGLibrary.AIR);
-
-            RegistryEntry.Reference<EntityAttribute> rangedAttr = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.RangedWeapon.DAMAGE);
-            if (rangedAttr != null) {
-                ranged = player.getAttributeValue(rangedAttr);
-            }
-
-            factor = DamageScalingHelper.attackDamageAndSecondary(
-                    ranged, rangedBaseline, rangedWeight,
-                    air, airBaseline, airWeight);
-        }
+        float factor = player != null ? AbilityScales.galeforce(player) : 1.0F;
 
         mswcompat$damageScale.set(factor);
     }

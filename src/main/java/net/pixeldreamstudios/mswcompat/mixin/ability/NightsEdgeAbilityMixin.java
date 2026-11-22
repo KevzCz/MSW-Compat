@@ -1,5 +1,6 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.pixeldreamstudios.mswcompat.util.AbilityScales;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,16 +45,7 @@ public abstract class NightsEdgeAbilityMixin {
             return;
         }
 
-        float factor = 1.0F;
-        if (user != null) {
-            factor = DamageScalingHelper.attackDamageAndSecondary(
-                    user.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
-                    ConfigHelper.getBaselineValue("nights_edge.attack_damage_baseline", 10.0F),
-                    ConfigHelper.getFloatValue("nights_edge.attack_damage_weight", 0.5F),
-                    SpellPowerHelper.getEffectiveSpellPower(user, MSWCompatIdentifiers.SpellPower.ARCANE),
-                    ConfigHelper.getBaselineValue("nights_edge.arcane_baseline", 20.0F),
-                    ConfigHelper.getFloatValue("nights_edge.arcane_weight", 0.5F));
-        }
+        float factor = user != null ? AbilityScales.nightsEdge(user) : 1.0F;
 
         mswcompat$damageScale.set(factor);
     }

@@ -1,5 +1,8 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.minecraft.world.World;
+import net.pixeldreamstudios.mswcompat.living.LivingAbilities;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -78,7 +81,7 @@ public abstract class OverhealMixin {
     @ModifyVariable(
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At(value = "STORE"),
-            ordinal = 0,
+            ordinal = 1,
             remap = true
 )
     private int mswcompat$scaleDuration(int duration) {
@@ -91,7 +94,7 @@ public abstract class OverhealMixin {
     @ModifyVariable(
             method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V",
             at = @At(value = "STORE"),
-            ordinal = 1,
+            ordinal = 2,
             remap = true
 )
     private int mswcompat$scaleAmplifier(int amp) {
@@ -110,5 +113,19 @@ public abstract class OverhealMixin {
         mswcompat$ampScale.remove();
         mswcompat$durationScale.remove();
         mswcompat$shouldScale.remove();
+    }
+
+    @Inject(method = "postHit(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/LivingEntity;)V", at = @At("HEAD"), cancellable = true, remap = true)
+    private void mswcompat$living(ItemStack stack, LivingEntity target, LivingEntity attacker, CallbackInfo ci) {
+        if (attacker instanceof PlayerEntity || attacker.getWorld().isClient()) {
+            return;
+        }
+        boolean scaling = mswcompat$shouldScale.get();
+        LivingAbilities.overheal((Overheal) (Object) this, stack, attacker, scaling ? mswcompat$durationScale.get() : LivingAbilities.NO_SCALE,
+                scaling ? mswcompat$ampScale.get() : LivingAbilities.NO_SCALE);
+        mswcompat$shouldScale.remove();
+        mswcompat$durationScale.remove();
+        mswcompat$ampScale.remove();
+        ci.cancel();
     }
 }

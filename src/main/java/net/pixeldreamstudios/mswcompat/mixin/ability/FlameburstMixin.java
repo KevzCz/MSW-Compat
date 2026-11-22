@@ -1,5 +1,7 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.pixeldreamstudios.mswcompat.living.LivingAbilities;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -72,5 +74,16 @@ public abstract class FlameburstMixin {
     private void mswcompat$clearScale(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
         mswcompat$moltenScale.remove();
         mswcompat$shouldScale.remove();
+    }
+
+    @Inject(method = "onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V", at = @At("HEAD"), cancellable = true, remap = true)
+    private void mswcompat$living(ItemStack stack, World world, LivingEntity user, int ticksUsed, CallbackInfo ci) {
+        if (user instanceof PlayerEntity || world.isClient()) {
+            return;
+        }
+        LivingAbilities.flameburst((Flameburst) (Object) this, stack, world, user, ticksUsed, mswcompat$shouldScale.get() ? mswcompat$moltenScale.get() : LivingAbilities.NO_SCALE);
+        mswcompat$shouldScale.remove();
+        mswcompat$moltenScale.remove();
+        ci.cancel();
     }
 }

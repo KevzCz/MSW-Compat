@@ -1,5 +1,6 @@
 package net.pixeldreamstudios.mswcompat.mixin.ability;
 
+import net.pixeldreamstudios.mswcompat.util.AbilityScales;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -49,19 +50,7 @@ public abstract class BloodlustAbilityMixin {
             return;
         }
 
-        float f = 1.0F;
-        if (player != null) {
-            double rage = 0.0;
-            RegistryEntry.Reference<EntityAttribute> rageEntry = AttributeHelper.getAttributeEntry(MSWCompatIdentifiers.MoreRPGLibrary.RAGE);
-            if (rageEntry != null) {
-                rage = player.getAttributeValue(rageEntry);
-            }
-            f = DamageScalingHelper.multiplicativeAboveBaselineAdAndRageFromZero(
-                    player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE),
-                    ConfigHelper.getBaselineValue("bloodlust.attack_damage_baseline", 7.0F),
-                    rage,
-                    ConfigHelper.getBaselineValue("bloodlust.rage_baseline", 100.0F));
-        }
+        float f = player != null ? AbilityScales.bloodlust(player) : 1.0F;
         mswcompat$factor.set(f);
     }
 
@@ -98,14 +87,7 @@ public abstract class BloodlustAbilityMixin {
             return player.damage(source, baseAmount);
         }
 
-        float factor = mswcompat$factor.get();
-        float scaled = baseAmount * factor;
-
-        float capHearts = ConfigHelper.getBaselineValue("bloodlust.self_damage_cap_hearts", 12.0F);
-        float capHealthPercent = ConfigHelper.getBaselineValue("bloodlust.self_damage_cap_health_percent", 0.5F);
-        float capHalfHp = player.getMaxHealth() * capHealthPercent;
-
-        float capped = Math.min(scaled, Math.min(capHearts, capHalfHp));
+        float capped = AbilityScales.bloodlustSelfDamage(player, baseAmount, mswcompat$factor.get());
         return player.damage(source, capped);
     }
 

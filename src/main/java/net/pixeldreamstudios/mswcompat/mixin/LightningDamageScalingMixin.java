@@ -2,13 +2,14 @@ package net.pixeldreamstudios.mswcompat.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.pixeldreamstudios.mswcompat.config.ConfigHelper;
+import net.pixeldreamstudios.mswcompat.living.LivingLightning;
 import net.pixeldreamstudios.mswcompat.util.MSWCompatIdentifiers;
 import net.pixeldreamstudios.mswcompat.util.SpellPowerHelper;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +27,7 @@ public abstract class LightningDamageScalingMixin {
     @Inject(method = "onStruckByLightning", at = @At("HEAD"))
     private void mswcompat$cacheAdditiveBonus(ServerWorld world, LightningEntity lightning, CallbackInfo ci) {
         float add = 0.0F;
-        ServerPlayerEntity sp = lightning.getChanneler();
+        LivingEntity sp = LivingLightning.caster(lightning);
         if (sp != null) {
             double power = SpellPowerHelper.getEffectiveSpellPower(sp, MSWCompatIdentifiers.SpellPower.LIGHTNING);
             double damagePerPower = ConfigHelper.getDoubleValue("lightning.damage_per_spell_power", 0.5);
@@ -47,7 +48,7 @@ public abstract class LightningDamageScalingMixin {
                                                     float baseAmount,
                                                     ServerWorld world,
                                                     LightningEntity lightning) {
-        ServerPlayerEntity channeler = lightning.getChanneler();
+        LivingEntity channeler = LivingLightning.caster(lightning);
 
         if (channeler == null) {
             return instance.damage(source, baseAmount);

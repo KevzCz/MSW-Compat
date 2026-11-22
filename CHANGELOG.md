@@ -1,1 +1,1 @@
-Improve code
+- Mobs, summons and other non-player wielders can now use weapon abilities that used to work only for player
